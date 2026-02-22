@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LED Matrix Control Panel - v3</title>
+
+    <!-- Google Fonts: DM Sans (headings), Source Sans 3 (body), JetBrains Mono (code) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- Theme initialization (must run before CSS to prevent flash) -->
     <script>
@@ -25,14 +30,14 @@
 
         var saved = getStorage('theme');
         var theme = saved || (prefersDark() ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
 
         // Theme toggle function
         window.toggleTheme = function() {
             try {
-                var current = document.documentElement.getAttribute('data-theme');
+                var current = document.documentElement.getAttribute('data-bs-theme');
                 var next = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
+                document.documentElement.setAttribute('data-bs-theme', next);
                 setStorage('theme', next);
                 window.updateThemeIcon(next);
             } catch (e) { /* no-op */ }
@@ -63,7 +68,7 @@
 
         // Initialize icon state once DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            window.updateThemeIcon(document.documentElement.getAttribute('data-theme') || 'light');
+            window.updateThemeIcon(document.documentElement.getAttribute('data-bs-theme') || 'light');
         });
 
         // Listen for OS theme changes (only when no explicit user preference)
@@ -72,7 +77,7 @@
             var handler = function(e) {
                 if (!getStorage('theme')) {
                     var t = e.matches ? 'dark' : 'light';
-                    document.documentElement.setAttribute('data-theme', t);
+                    document.documentElement.setAttribute('data-bs-theme', t);
                     window.updateThemeIcon(t);
                 }
             };
@@ -90,6 +95,22 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+    <!-- Bootstrap 5.3 CSS (CDN with AP mode fallback) -->
+    <script>
+    (function() {
+        var isAPMode = window.location.hostname === '192.168.4.1' ||
+                       window.location.hostname.startsWith('192.168.4.');
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = isAPMode
+            ? '/static/v3/vendor/bootstrap.min.css'
+            : 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
+        document.head.appendChild(link);
+    })();
+    </script>
 
     <!-- HTMX for dynamic content loading -->
     <!-- Use local files when in AP mode (192.168.4.x) to avoid CDN dependency -->
@@ -5348,6 +5369,23 @@
             </form>
         </div>
     </div>
+    <!-- Bootstrap 5.3 JS Bundle + jQuery (CDN with AP mode fallback) -->
+    <script>
+    (function() {
+        var isAPMode = window.location.hostname === '192.168.4.1' ||
+                       window.location.hostname.startsWith('192.168.4.');
+        var jq = document.createElement('script');
+        jq.src = isAPMode
+            ? '/static/v3/vendor/jquery.slim.min.js'
+            : 'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js';
+        document.body.appendChild(jq);
+        var bs = document.createElement('script');
+        bs.src = isAPMode
+            ? '/static/v3/vendor/bootstrap.bundle.min.js'
+            : 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js';
+        document.body.appendChild(bs);
+    })();
+    </script>
 </body>
 </html>
 
