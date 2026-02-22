@@ -22,15 +22,17 @@ ENV/
 # IDE
 .vscode/
 .idea/
+.cursor/
 *.swp
-*.swo 
+*.swo
 emulator_config.json
 
-# Testing
+# Testing / Linting
 .pytest_cache/
 .coverage
 htmlcov/
 .mypy_cache/
+.ruff_cache/
 
 # Cache directory (root level only, not src/cache which is source code)
 /cache/
