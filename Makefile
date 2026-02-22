@@ -3,7 +3,6 @@
 
 .DEFAULT_GOAL := help
 
-PYTHON_VERSION := 3.12
 VENV := venv
 VENV_BIN := $(VENV)/bin
 PYTHON := $(VENV_BIN)/python
@@ -20,8 +19,8 @@ setup: venv install hooks ## Full dev setup: venv + deps + pre-commit hooks
 .PHONY: venv
 venv: ## Create Python virtual environment
 	@if [ ! -d "$(VENV)" ]; then \
-		echo "Creating venv with Python $(PYTHON_VERSION)..."; \
-		python$(PYTHON_VERSION) -m venv $(VENV); \
+		echo "Creating venv with $$(python3 --version)..."; \
+		python3 -m venv $(VENV); \
 		echo "venv created."; \
 	else \
 		echo "venv already exists."; \
