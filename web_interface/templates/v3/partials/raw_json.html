@@ -1,101 +1,85 @@
-<div class="space-y-6">
+<div class="d-flex flex-column gap-4">
     <!-- Config.json Editor -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="border-b border-gray-200 pb-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-900">config.json Editor</h2>
-                    <p class="mt-1 text-sm text-gray-600">{{ main_config_path }}</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="formatJson('main-config-editor', 'main-config-validation')" 
-                            class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        <i class="fas fa-align-left mr-2"></i>
-                        Format JSON
-                    </button>
-                    <button onclick="manualValidateJson('main-config-editor', 'main-config-validation')" 
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        Validate JSON
-                    </button>
-                    <button onclick="saveMainConfig()" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                        <i class="fas fa-save mr-2"></i>
-                        Save
-                    </button>
-                </div>
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="card-title mb-0"><i class="fas fa-file-code me-2"></i>config.json Editor</h6>
+                <small class="text-muted">{{ main_config_path }}</small>
+            </div>
+            <div class="d-flex gap-2">
+                <button onclick="formatJson('main-config-editor', 'main-config-validation')"
+                        class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-align-left me-1"></i>
+                    Format JSON
+                </button>
+                <button onclick="manualValidateJson('main-config-editor', 'main-config-validation')"
+                        class="btn btn-sm btn-warning">
+                    <i class="fas fa-check-circle me-1"></i>
+                    Validate JSON
+                </button>
+                <button onclick="saveMainConfig()"
+                        class="btn btn-sm btn-primary">
+                    <i class="fas fa-save me-1"></i>
+                    Save
+                </button>
             </div>
         </div>
-
-        <div class="relative">
-            <textarea id="main-config-editor" 
-                      class="w-full h-96 font-mono text-sm p-4 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+        <div class="card-body p-0">
+            <textarea id="main-config-editor"
+                      class="form-control font-monospace border-0 rounded-0"
+                      style="min-height: 400px; font-size: 0.85rem;"
                       spellcheck="false">{{ main_config_json }}</textarea>
-            <div id="main-config-validation" class="mt-2 text-sm"></div>
+            <div id="main-config-validation" class="px-3 py-2 small"></div>
         </div>
-
-        <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-yellow-800">Warning</h3>
-                    <div class="mt-2 text-sm text-yellow-700">
-                        <p>Editing this file directly can break your configuration. Always validate JSON syntax before saving.</p>
-                        <p class="mt-1">After saving, you may need to restart the display service for changes to take effect.</p>
-                    </div>
+        <div class="card-footer">
+            <div class="alert alert-warning mb-0 d-flex align-items-start gap-2 py-2">
+                <i class="fas fa-exclamation-triangle mt-1"></i>
+                <div class="small">
+                    <strong>Warning:</strong> Editing this file directly can break your configuration. Always validate JSON syntax before saving.
+                    After saving, you may need to restart the display service for changes to take effect.
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Config_secrets.json Editor -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="border-b border-gray-200 pb-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-900">config_secrets.json Editor</h2>
-                    <p class="mt-1 text-sm text-gray-600">{{ secrets_config_path }}</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="formatJson('secrets-config-editor', 'secrets-config-validation')" 
-                            class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        <i class="fas fa-align-left mr-2"></i>
-                        Format JSON
-                    </button>
-                    <button onclick="manualValidateJson('secrets-config-editor', 'secrets-config-validation')" 
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        Validate JSON
-                    </button>
-                    <button onclick="saveSecretsConfig()" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                        <i class="fas fa-save mr-2"></i>
-                        Save
-                    </button>
-                </div>
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="card-title mb-0"><i class="fas fa-shield-alt me-2"></i>config_secrets.json Editor</h6>
+                <small class="text-muted">{{ secrets_config_path }}</small>
+            </div>
+            <div class="d-flex gap-2">
+                <button onclick="formatJson('secrets-config-editor', 'secrets-config-validation')"
+                        class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-align-left me-1"></i>
+                    Format JSON
+                </button>
+                <button onclick="manualValidateJson('secrets-config-editor', 'secrets-config-validation')"
+                        class="btn btn-sm btn-warning">
+                    <i class="fas fa-check-circle me-1"></i>
+                    Validate JSON
+                </button>
+                <button onclick="saveSecretsConfig()"
+                        class="btn btn-sm btn-primary">
+                    <i class="fas fa-save me-1"></i>
+                    Save
+                </button>
             </div>
         </div>
-
-        <div class="relative">
-            <textarea id="secrets-config-editor" 
-                      class="w-full h-96 font-mono text-sm p-4 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+        <div class="card-body p-0">
+            <textarea id="secrets-config-editor"
+                      class="form-control font-monospace border-0 rounded-0"
+                      style="min-height: 400px; font-size: 0.85rem;"
                       spellcheck="false">{{ secrets_config_json }}</textarea>
-            <div id="secrets-config-validation" class="mt-2 text-sm"></div>
+            <div id="secrets-config-validation" class="px-3 py-2 small"></div>
         </div>
-
-        <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-shield-alt text-red-600"></i>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">Security Notice</h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <p>This file contains sensitive information like API keys and passwords.</p>
-                        <p class="mt-1">Never share this file or commit it to version control.</p>
-                    </div>
+        <div class="card-footer">
+            <div class="alert alert-danger mb-0 d-flex align-items-start gap-2 py-2">
+                <i class="fas fa-shield-alt mt-1"></i>
+                <div class="small">
+                    <strong>Security Notice:</strong> This file contains sensitive information like API keys and passwords.
+                    Never share this file or commit it to version control.
                 </div>
             </div>
         </div>
@@ -107,12 +91,12 @@
 function formatJson(editorId, validationDivId) {
     const textarea = document.getElementById(editorId);
     const jsonText = textarea.value;
-    
+
     try {
         const parsed = JSON.parse(jsonText);
         const formatted = JSON.stringify(parsed, null, 4);
         textarea.value = formatted;
-        
+
         // Auto-validate after formatting
         validateJSON(editorId, validationDivId);
         showNotification('JSON formatted successfully!', 'success');
@@ -127,38 +111,28 @@ function manualValidateJson(editorId, validationDivId) {
     const textarea = document.getElementById(editorId);
     const validation = document.getElementById(validationDivId);
     const jsonText = textarea.value;
-    
+
     if (!textarea || !validation) return;
-    
+
     try {
         const parsed = JSON.parse(jsonText);
         validation.innerHTML = `
-            <div class="p-3 bg-green-50 border border-green-200 rounded-md">
-                <div class="flex items-start">
-                    <i class="fas fa-check-circle text-green-600 text-xl mr-3 mt-1"></i>
-                    <div>
-                        <div class="font-semibold text-green-800">✓ JSON is valid!</div>
-                        <div class="text-sm text-green-700 mt-1">
-                            ✓ Valid JSON syntax<br>
-                            ✓ Proper structure<br>
-                            ✓ No syntax errors detected
-                        </div>
-                    </div>
+            <div class="alert alert-success d-flex align-items-start gap-2 mb-0 py-2">
+                <i class="fas fa-check-circle mt-1"></i>
+                <div>
+                    <strong>JSON is valid!</strong><br>
+                    <span class="small">Valid JSON syntax. Proper structure. No syntax errors detected.</span>
                 </div>
             </div>
         `;
         showNotification('JSON validation successful!', 'success');
     } catch (e) {
         validation.innerHTML = `
-            <div class="p-3 bg-red-50 border border-red-200 rounded-md">
-                <div class="flex items-start">
-                    <i class="fas fa-times-circle text-red-600 text-xl mr-3 mt-1"></i>
-                    <div>
-                        <div class="font-semibold text-red-800">✗ Invalid JSON syntax</div>
-                        <div class="text-sm text-red-700 mt-1">
-                            <strong>Error:</strong> ${e.message}
-                        </div>
-                    </div>
+            <div class="alert alert-danger d-flex align-items-start gap-2 mb-0 py-2">
+                <i class="fas fa-times-circle mt-1"></i>
+                <div>
+                    <strong>Invalid JSON syntax</strong><br>
+                    <span class="small"><strong>Error:</strong> ${e.message}</span>
                 </div>
             </div>
         `;
@@ -170,15 +144,15 @@ function manualValidateJson(editorId, validationDivId) {
 function validateJSON(editor, validationDiv) {
     const textarea = document.getElementById(editor);
     const validation = document.getElementById(validationDiv);
-    
+
     if (!textarea || !validation) return true;
-    
+
     try {
         JSON.parse(textarea.value);
-        validation.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Valid JSON</span>';
+        validation.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Valid JSON</span>';
         return true;
     } catch (e) {
-        validation.innerHTML = '<span class="text-red-600"><i class="fas fa-times-circle mr-1"></i>Invalid JSON: ' + e.message + '</span>';
+        validation.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Invalid JSON: ' + e.message + '</span>';
         return false;
     }
 }
@@ -200,16 +174,16 @@ setTimeout(() => {
 
 function saveMainConfig() {
     const textarea = document.getElementById('main-config-editor');
-    
+
     // Validate JSON first
     if (!validateJSON('main-config-editor', 'main-config-validation')) {
         showNotification('Invalid JSON! Please fix errors before saving.', 'error');
         return;
     }
-    
+
     try {
         const config = JSON.parse(textarea.value);
-        
+
         // Save via API
         fetch('/api/v3/config/raw/main', {
             method: 'POST',
@@ -222,7 +196,7 @@ function saveMainConfig() {
             // Store status and statusText before parsing
             const status = response.status;
             const statusText = response.statusText;
-            
+
             // Try to parse JSON response
             let data;
             try {
@@ -231,14 +205,14 @@ function saveMainConfig() {
                 // If JSON parsing fails, throw generic HTTP error
                 throw new Error(`HTTP ${status}: ${statusText}`);
             }
-            
+
             // Handle non-OK responses
             if (!response.ok) {
                 // Extract specific error message from API response if available
                 const errorMessage = data.message || data.status || statusText;
                 throw new Error(errorMessage);
             }
-            
+
             // Handle successful responses
             if (data.status === 'success') {
                 showNotification('config.json saved successfully!', 'success');
@@ -257,16 +231,16 @@ function saveMainConfig() {
 
 function saveSecretsConfig() {
     const textarea = document.getElementById('secrets-config-editor');
-    
+
     // Validate JSON first
     if (!validateJSON('secrets-config-editor', 'secrets-config-validation')) {
         showNotification('Invalid JSON! Please fix errors before saving.', 'error');
         return;
     }
-    
+
     try {
         const config = JSON.parse(textarea.value);
-        
+
         // Save via API
         fetch('/api/v3/config/raw/secrets', {
             method: 'POST',
@@ -279,7 +253,7 @@ function saveSecretsConfig() {
             // Store status and statusText before parsing
             const status = response.status;
             const statusText = response.statusText;
-            
+
             // Try to parse JSON response
             let data;
             try {
@@ -288,14 +262,14 @@ function saveSecretsConfig() {
                 // If JSON parsing fails, throw generic HTTP error
                 throw new Error(`HTTP ${status}: ${statusText}`);
             }
-            
+
             // Handle non-OK responses
             if (!response.ok) {
                 // Extract specific error message from API response if available
                 const errorMessage = data.message || data.status || statusText;
                 throw new Error(errorMessage);
             }
-            
+
             // Handle successful responses
             if (data.status === 'success') {
                 showNotification('config_secrets.json saved successfully!', 'success');
@@ -315,4 +289,3 @@ function saveSecretsConfig() {
 // showNotification is provided by the notification widget (notification.js)
 // No local definition needed - uses window.showNotification from the widget
 </script>
-
