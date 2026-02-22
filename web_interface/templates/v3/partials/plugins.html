@@ -1,156 +1,157 @@
-<div class="bg-white rounded-lg shadow-md p-6" data-plugins-loaded="true">
-    <div class="section-header">
-        <h2 class="text-xl font-bold text-gray-900 mb-1">Plugin Management</h2>
-        <p class="text-sm text-gray-600">Manage installed plugins, configure settings, and browse the plugin store.</p>
+<div class="card shadow-sm" data-plugins-loaded="true">
+    <div class="card-header">
+        <h6 class="mb-1">Plugin Management</h6>
+        <p class="small text-muted mb-0">Manage installed plugins, configure settings, and browse the plugin store.</p>
     </div>
+    <div class="card-body">
 
     <!-- Plugin Controls -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex items-center space-x-4">
-            <button type="button" id="refresh-plugins-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                <i class="fas fa-sync-alt mr-2"></i>Refresh Plugins
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" id="refresh-plugins-btn" class="btn btn-primary btn-sm">
+                <i class="fas fa-sync-alt me-1"></i>Refresh Plugins
             </button>
-            <button type="button" id="update-all-plugins-btn" class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center">
-                <i class="fas fa-cloud-download-alt mr-2"></i>Check &amp; Update All
+            <button type="button" id="update-all-plugins-btn" class="btn btn-success btn-sm d-flex align-items-center">
+                <i class="fas fa-cloud-download-alt me-1"></i>Check &amp; Update All
             </button>
-            <button type="button" id="restart-display-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                <i class="fas fa-redo mr-2"></i>Restart Display
+            <button type="button" id="restart-display-btn" class="btn btn-primary btn-sm">
+                <i class="fas fa-redo me-1"></i>Restart Display
             </button>
         </div>
     </div>
 
     <!-- Plugin Content Area -->
-    <div class="space-y-8">
+    <div>
         <!-- Installed Plugins Section (Always visible at top) -->
-        <div id="installed-plugins-section" class="mb-8">
-            <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-200">
-                <div class="flex items-center gap-3">
-                    <h3 class="text-lg font-bold text-gray-900">Installed Plugins</h3>
-                    <span id="installed-count" class="text-sm text-gray-500 font-medium">0 installed</span>
+        <div id="installed-plugins-section" class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0 fw-bold">Installed Plugins</h6>
+                    <span id="installed-count" class="small text-muted fw-medium">0 installed</span>
                 </div>
             </div>
-            <div id="installed-plugins-content" class="block">
-                <div id="installed-plugins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+            <div id="installed-plugins-content" class="d-block">
+                <div id="installed-plugins-grid" class="row g-3">
                     <!-- Plugins will be loaded here -->
                 </div>
             </div>
         </div>
 
         <!-- Plugin Store Section (Always visible at bottom) -->
-        <div id="plugin-store-section" class="border-t border-gray-200 pt-8 mt-8">
-            <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-200">
-                <div class="flex items-center gap-3">
-                    <h3 class="text-lg font-bold text-gray-900">Plugin Store</h3>
-                    <span id="store-count" class="text-sm text-gray-500 font-medium">
-                        <i class="fas fa-spinner fa-spin mr-1"></i>Loading...
+        <div id="plugin-store-section" class="border-top pt-4 mt-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0 fw-bold">Plugin Store</h6>
+                    <span id="store-count" class="small text-muted fw-medium">
+                        <i class="fas fa-spinner fa-spin me-1"></i>Loading...
                     </span>
                 </div>
             </div>
-            
-            <div id="plugin-store-content" class="block">
-            
+
+            <div id="plugin-store-content" class="d-block">
+
             <!-- GitHub Token Configuration (Combined Warning + Settings) -->
-            <div id="github-token-container" class="mb-5">
+            <div id="github-token-container" class="mb-4">
                 <!-- Warning Banner (shown when no token configured) -->
-                <div id="github-auth-warning" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
-                        </div>
-                        <div class="ml-3 flex-1">
-                            <p class="text-sm text-yellow-700">
-                                <strong>Limited API Access:</strong> GitHub API requests are limited to <span id="rate-limit-count">60</span> per hour without authentication.
-                                Add a GitHub token to increase this to 5,000 requests/hour and get real-time plugin stats.
-                            </p>
-                            <p class="mt-2 text-sm text-yellow-700">
-                                <a href="https://github.com/settings/tokens/new?description=LEDMatrix%20Plugin%20Manager&scopes=" target="_blank" class="font-medium underline hover:text-yellow-800">
-                                    Create a GitHub Token →
-                                </a>
-                                <span class="mx-2">|</span>
-                                <a href="#" onclick="event.preventDefault(); openGithubTokenSettings()" class="font-medium underline hover:text-yellow-800">
-                                    Configure Token
-                                </a>
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <button onclick="dismissGithubWarning()" class="text-yellow-700 hover:text-yellow-900">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                <div id="github-auth-warning" class="hidden alert alert-warning border-start border-warning border-4 d-flex align-items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                        <p class="small text-warning-emphasis mb-1">
+                            <strong>Limited API Access:</strong> GitHub API requests are limited to <span id="rate-limit-count">60</span> per hour without authentication.
+                            Add a GitHub token to increase this to 5,000 requests/hour and get real-time plugin stats.
+                        </p>
+                        <p class="small text-warning-emphasis mb-0">
+                            <a href="https://github.com/settings/tokens/new?description=LEDMatrix%20Plugin%20Manager&scopes=" target="_blank" class="fw-medium text-decoration-underline">
+                                Create a GitHub Token &rarr;
+                            </a>
+                            <span class="mx-2">|</span>
+                            <a href="#" onclick="event.preventDefault(); openGithubTokenSettings()" class="fw-medium text-decoration-underline">
+                                Configure Token
+                            </a>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <button onclick="dismissGithubWarning()" class="btn-close btn-close-sm" aria-label="Dismiss"></button>
                     </div>
                 </div>
 
                 <!-- Settings Panel (expandable configuration form) -->
-                <div id="github-token-settings" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-5 shadow-sm mt-3">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="flex items-center space-x-2">
-                        <i class="fab fa-github text-blue-600 text-xl"></i>
-                        <h4 class="font-bold text-gray-900">GitHub API Configuration</h4>
+                <div id="github-token-settings" class="hidden card border-primary bg-primary bg-opacity-10 mt-3">
+                <div class="card-body p-3">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fab fa-github text-primary fs-5"></i>
+                        <h6 class="fw-bold mb-0">GitHub API Configuration</h6>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button id="toggle-github-token-collapse" class="text-gray-600 hover:text-gray-900 text-sm flex items-center font-medium transition-colors">
-                            <i class="fas fa-chevron-up mr-1" id="github-token-icon-collapse"></i>
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="toggle-github-token-collapse" class="btn btn-sm btn-link text-muted text-decoration-none d-flex align-items-center fw-medium">
+                            <i class="fas fa-chevron-up me-1" id="github-token-icon-collapse"></i>
                             <span>Collapse</span>
                         </button>
                     </div>
                 </div>
-                
-                <div id="github-token-content" class="block">
-                
-                <p class="text-sm text-gray-600 mb-3">
+
+                <div id="github-token-content" class="d-block">
+
+                <p class="small text-muted mb-3">
                     Configure your GitHub Personal Access Token to increase API rate limits and get real-time plugin statistics.
                 </p>
 
-                <div class="space-y-3">
+                <div class="d-flex flex-column gap-3">
                     <div>
-                        <label for="github-token-input" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="github-token-input" class="form-label small fw-medium">
                             GitHub Personal Access Token
                         </label>
-                        <div class="relative">
-                            <input type="password" id="github-token-input" 
-                                   class="w-full px-3 py-2 pr-20 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        <div class="input-group">
+                            <input type="password" id="github-token-input"
+                                   class="form-control form-control-sm"
                                    placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-                            <button type="button" onclick="toggleGithubTokenVisibility()" 
-                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                            <button type="button" onclick="toggleGithubTokenVisibility()"
+                                    class="btn btn-outline-secondary btn-sm">
                                 <i id="github-token-icon" class="fas fa-eye"></i>
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">
+                        <div class="form-text">
                             Token is stored in config_secrets.json. No scopes required for public repositories.
-                        </p>
+                        </div>
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <a href="https://github.com/settings/tokens/new?description=LEDMatrix%20Plugin%20Manager&scopes=" 
-                           target="_blank" 
-                           class="text-sm text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-external-link-alt mr-1"></i>Create Token on GitHub
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="https://github.com/settings/tokens/new?description=LEDMatrix%20Plugin%20Manager&scopes="
+                           target="_blank"
+                           class="small text-primary">
+                            <i class="fas fa-external-link-alt me-1"></i>Create Token on GitHub
                         </a>
-                        <div class="flex gap-2">
-                            <button onclick="loadGithubToken()" class="px-3 py-1.5 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded-md">
-                                <i class="fas fa-sync mr-1"></i>Load Current
+                        <div class="d-flex gap-2">
+                            <button onclick="loadGithubToken()" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-sync me-1"></i>Load Current
                             </button>
-                            <button onclick="saveGithubToken()" class="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md">
-                                <i class="fas fa-save mr-1"></i>Save Token
+                            <button onclick="saveGithubToken()" class="btn btn-primary btn-sm">
+                                <i class="fas fa-save me-1"></i>Save Token
                             </button>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-blue-200 rounded p-3">
-                        <p class="text-xs text-gray-600">
-                            <strong>Rate Limits:</strong><br>
-                            Without token: 60 requests/hour<br>
-                            With token: 5,000 requests/hour
-                        </p>
+                    <div class="card bg-white border-primary">
+                        <div class="card-body p-2">
+                            <p class="small text-muted mb-0">
+                                <strong>Rate Limits:</strong><br>
+                                Without token: 60 requests/hour<br>
+                                With token: 5,000 requests/hour
+                            </p>
+                        </div>
                     </div>
+                </div>
                 </div>
                 </div>
                 </div>
             </div>
             <!-- Search Row -->
-            <div class="flex gap-3 mb-4">
-                <input type="text" id="plugin-search" placeholder="Search plugins by name, description, or tags..." class="form-control text-sm flex-[3] min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:shadow-md transition-shadow">
-                <select id="plugin-category" class="form-control text-sm flex-1 px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:shadow-md transition-shadow">
+            <div class="d-flex gap-2 mb-3">
+                <input type="text" id="plugin-search" placeholder="Search plugins by name, description, or tags..." class="form-control form-control-sm flex-grow-1">
+                <select id="plugin-category" class="form-select form-select-sm" style="max-width: 180px;">
                     <option value="">All Categories</option>
                     <option value="sports">Sports</option>
                     <option value="content">Content</option>
@@ -163,239 +164,245 @@
             </div>
 
             <!-- Sort & Filter Bar -->
-            <div id="store-filter-bar" class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div id="store-filter-bar" class="d-flex flex-wrap align-items-center gap-2 mb-3 p-2 bg-light rounded border">
                 <!-- Sort -->
-                <select id="store-sort" class="text-sm px-3 py-1.5 border border-gray-300 rounded-md bg-white">
-                    <option value="a-z">A → Z</option>
-                    <option value="z-a">Z → A</option>
+                <select id="store-sort" class="form-select form-select-sm" style="width: auto;">
+                    <option value="a-z">A &rarr; Z</option>
+                    <option value="z-a">Z &rarr; A</option>
                     <option value="category">Category</option>
                     <option value="author">Author</option>
                     <option value="newest">Newest</option>
                 </select>
 
-                <div class="w-px h-6 bg-gray-300"></div>
+                <div class="vr"></div>
 
                 <!-- Installed filter toggle -->
-                <button id="store-filter-installed" class="text-sm px-3 py-1.5 rounded-md border border-gray-300 bg-white hover:bg-gray-100 transition-colors" title="Cycle: All → Installed → Not Installed">
-                    <i class="fas fa-filter mr-1 text-gray-400"></i>All
+                <button id="store-filter-installed" class="btn btn-sm btn-outline-secondary" title="Cycle: All &rarr; Installed &rarr; Not Installed">
+                    <i class="fas fa-filter me-1 text-muted"></i>All
                 </button>
 
-                <div class="flex-1"></div>
+                <div class="flex-grow-1"></div>
 
                 <!-- Active filter count + clear -->
-                <span id="store-active-filters" class="hidden text-xs text-blue-600 font-medium"></span>
-                <button id="store-clear-filters" class="hidden text-sm px-3 py-1.5 rounded-md border border-red-300 bg-white text-red-600 hover:bg-red-50 transition-colors">
-                    <i class="fas fa-times mr-1"></i>Clear Filters
+                <span id="store-active-filters" class="hidden small text-primary fw-medium"></span>
+                <button id="store-clear-filters" class="hidden btn btn-sm btn-outline-danger">
+                    <i class="fas fa-times me-1"></i>Clear Filters
                 </button>
             </div>
 
             <!-- Results Bar (top pagination) -->
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <span id="store-results-info" class="text-sm text-gray-600"></span>
-                <div class="flex items-center gap-3">
-                    <select id="store-per-page" class="text-sm px-2 py-1 border border-gray-300 rounded-md bg-white">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <span id="store-results-info" class="small text-muted"></span>
+                <div class="d-flex align-items-center gap-2">
+                    <select id="store-per-page" class="form-select form-select-sm" style="width: auto;">
                         <option value="12">12 per page</option>
                         <option value="24">24 per page</option>
                         <option value="48">48 per page</option>
                     </select>
-                    <div id="store-pagination-top" class="flex items-center gap-1"></div>
+                    <div id="store-pagination-top" class="d-flex align-items-center gap-1"></div>
                 </div>
             </div>
 
-            <div id="plugin-store-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+            <div id="plugin-store-grid" class="row g-3">
                 <!-- Loading skeleton -->
-                <div class="store-loading col-span-full">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-                        <div class="bg-gray-200 rounded-lg p-4 h-48 animate-pulse"></div>
-                        <div class="bg-gray-200 rounded-lg p-4 h-48 animate-pulse"></div>
-                        <div class="bg-gray-200 rounded-lg p-4 h-48 animate-pulse"></div>
-                        <div class="bg-gray-200 rounded-lg p-4 h-48 animate-pulse"></div>
-                        <div class="bg-gray-200 rounded-lg p-4 h-48 animate-pulse"></div>
+                <div class="store-loading col-12">
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6 col-lg-4"><div class="bg-secondary bg-opacity-25 rounded p-3 placeholder-glow" style="height: 12rem;"></div></div>
+                        <div class="col-12 col-sm-6 col-lg-4"><div class="bg-secondary bg-opacity-25 rounded p-3 placeholder-glow" style="height: 12rem;"></div></div>
+                        <div class="col-12 col-sm-6 col-lg-4"><div class="bg-secondary bg-opacity-25 rounded p-3 placeholder-glow" style="height: 12rem;"></div></div>
+                        <div class="col-12 col-sm-6 col-lg-4"><div class="bg-secondary bg-opacity-25 rounded p-3 placeholder-glow" style="height: 12rem;"></div></div>
+                        <div class="col-12 col-sm-6 col-lg-4"><div class="bg-secondary bg-opacity-25 rounded p-3 placeholder-glow" style="height: 12rem;"></div></div>
                     </div>
                 </div>
             </div>
 
             <!-- Bottom Pagination -->
-            <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-                <span id="store-results-info-bottom" class="text-sm text-gray-600"></span>
-                <div id="store-pagination-bottom" class="flex items-center gap-1"></div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                <span id="store-results-info-bottom" class="small text-muted"></span>
+                <div id="store-pagination-bottom" class="d-flex align-items-center gap-1"></div>
             </div>
         </div>
-        
+
         <!-- Starlark Apps Section (Tronbyte Community Apps) -->
-        <div id="starlark-apps-section" class="border-t border-gray-200 pt-8 mt-8">
-            <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-200">
-                <div class="flex items-center gap-3">
-                    <h3 class="text-lg font-bold text-gray-900"><i class="fas fa-star text-yellow-500 mr-2"></i>Starlark Apps</h3>
-                    <span id="starlark-apps-count" class="text-sm text-gray-500 font-medium"></span>
+        <div id="starlark-apps-section" class="border-top pt-4 mt-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-star text-warning me-2"></i>Starlark Apps</h6>
+                    <span id="starlark-apps-count" class="small text-muted fw-medium"></span>
                 </div>
-                <button id="toggle-starlark-section" class="text-sm text-blue-600 hover:text-blue-800 flex items-center font-medium transition-colors">
-                    <i class="fas fa-chevron-down mr-1" id="starlark-section-icon"></i>
+                <button id="toggle-starlark-section" class="btn btn-sm btn-link text-primary text-decoration-none d-flex align-items-center fw-medium">
+                    <i class="fas fa-chevron-down me-1" id="starlark-section-icon"></i>
                     <span>Show</span>
                 </button>
             </div>
             <div id="starlark-section-content" class="hidden">
-                <p class="text-sm text-gray-600 mb-4">Browse and install Starlark apps from the <a href="https://github.com/tronbyt/apps" target="_blank" class="text-blue-600 hover:text-blue-800 underline">Tronbyte community repository</a>. Requires <strong>Pixlet</strong> binary.</p>
+                <p class="small text-muted mb-3">Browse and install Starlark apps from the <a href="https://github.com/tronbyt/apps" target="_blank" class="text-primary text-decoration-underline">Tronbyte community repository</a>. Requires <strong>Pixlet</strong> binary.</p>
 
                 <!-- Pixlet Status Banner -->
-                <div id="starlark-pixlet-status" class="mb-4"></div>
+                <div id="starlark-pixlet-status" class="mb-3"></div>
 
                 <!-- Search Row -->
-                <div class="flex gap-3 mb-4">
-                    <input type="text" id="starlark-search" placeholder="Search by name, description, author..." class="form-control text-sm flex-[3] min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:shadow-md transition-shadow">
-                    <select id="starlark-category" class="form-control text-sm flex-1 px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:shadow-md transition-shadow">
+                <div class="d-flex gap-2 mb-3">
+                    <input type="text" id="starlark-search" placeholder="Search by name, description, author..." class="form-control form-control-sm flex-grow-1">
+                    <select id="starlark-category" class="form-select form-select-sm" style="max-width: 180px;">
                         <option value="">All Categories</option>
                     </select>
                 </div>
 
                 <!-- Sort & Filter Bar -->
-                <div id="starlark-filter-bar" class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div id="starlark-filter-bar" class="d-flex flex-wrap align-items-center gap-2 mb-3 p-2 bg-light rounded border">
                     <!-- Sort -->
-                    <select id="starlark-sort" class="text-sm px-3 py-1.5 border border-gray-300 rounded-md bg-white">
-                        <option value="a-z">A → Z</option>
-                        <option value="z-a">Z → A</option>
+                    <select id="starlark-sort" class="form-select form-select-sm" style="width: auto;">
+                        <option value="a-z">A &rarr; Z</option>
+                        <option value="z-a">Z &rarr; A</option>
                         <option value="category">Category</option>
                         <option value="author">Author</option>
                     </select>
 
-                    <div class="w-px h-6 bg-gray-300"></div>
+                    <div class="vr"></div>
 
                     <!-- Installed filter toggle -->
-                    <button id="starlark-filter-installed" class="text-sm px-3 py-1.5 rounded-md border border-gray-300 bg-white hover:bg-gray-100 transition-colors" title="Cycle: All → Installed → Not Installed">
-                        <i class="fas fa-filter mr-1 text-gray-400"></i>All
+                    <button id="starlark-filter-installed" class="btn btn-sm btn-outline-secondary" title="Cycle: All &rarr; Installed &rarr; Not Installed">
+                        <i class="fas fa-filter me-1 text-muted"></i>All
                     </button>
 
                     <!-- Author filter -->
-                    <select id="starlark-filter-author" class="text-sm px-3 py-1.5 border border-gray-300 rounded-md bg-white">
+                    <select id="starlark-filter-author" class="form-select form-select-sm" style="width: auto;">
                         <option value="">All Authors</option>
                     </select>
 
-                    <div class="flex-1"></div>
+                    <div class="flex-grow-1"></div>
 
                     <!-- Active filter count + clear -->
-                    <span id="starlark-active-filters" class="hidden text-xs text-blue-600 font-medium"></span>
-                    <button id="starlark-clear-filters" class="hidden text-sm px-3 py-1.5 rounded-md border border-red-300 bg-white text-red-600 hover:bg-red-50 transition-colors">
-                        <i class="fas fa-times mr-1"></i>Clear Filters
+                    <span id="starlark-active-filters" class="hidden small text-primary fw-medium"></span>
+                    <button id="starlark-clear-filters" class="hidden btn btn-sm btn-outline-danger">
+                        <i class="fas fa-times me-1"></i>Clear Filters
                     </button>
                 </div>
 
                 <!-- Results Bar (top pagination) -->
-                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <span id="starlark-results-info" class="text-sm text-gray-600"></span>
-                    <div class="flex items-center gap-3">
-                        <select id="starlark-per-page" class="text-sm px-2 py-1 border border-gray-300 rounded-md bg-white">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <span id="starlark-results-info" class="small text-muted"></span>
+                    <div class="d-flex align-items-center gap-2">
+                        <select id="starlark-per-page" class="form-select form-select-sm" style="width: auto;">
                             <option value="24">24 per page</option>
                             <option value="48">48 per page</option>
                             <option value="96">96 per page</option>
                         </select>
-                        <div id="starlark-pagination-top" class="flex items-center gap-1"></div>
+                        <div id="starlark-pagination-top" class="d-flex align-items-center gap-1"></div>
                     </div>
                 </div>
 
                 <!-- Starlark Apps Grid -->
-                <div id="starlark-apps-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                <div id="starlark-apps-grid" class="row g-3">
                 </div>
 
                 <!-- Bottom Pagination -->
-                <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-                    <span id="starlark-results-info-bottom" class="text-sm text-gray-600"></span>
-                    <div id="starlark-pagination-bottom" class="flex items-center gap-1"></div>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                    <span id="starlark-results-info-bottom" class="small text-muted"></span>
+                    <div id="starlark-pagination-bottom" class="d-flex align-items-center gap-1"></div>
                 </div>
 
                 <!-- Upload .star file -->
-                <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-                    <button id="starlark-upload-btn" class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
-                        <i class="fas fa-upload mr-2"></i>Upload .star File
+                <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                    <button id="starlark-upload-btn" class="btn btn-success btn-sm">
+                        <i class="fas fa-upload me-2"></i>Upload .star File
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Install from GitHub URL Section (Separate section, always visible) -->
-        <div class="border-t border-gray-200 pt-8 mt-8">
-            <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-200">
+        <div class="border-top pt-4 mt-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Install from GitHub</h3>
-                    <p class="text-sm text-gray-600 mt-1">Install plugins directly from GitHub repositories</p>
+                    <h6 class="mb-0 fw-bold">Install from GitHub</h6>
+                    <p class="small text-muted mt-1 mb-0">Install plugins directly from GitHub repositories</p>
                 </div>
-                <button id="toggle-github-install" class="text-sm text-blue-600 hover:text-blue-800 flex items-center font-medium transition-colors">
-                    <i class="fas fa-chevron-down mr-1" id="github-install-icon"></i>
+                <button id="toggle-github-install" class="btn btn-sm btn-link text-primary text-decoration-none d-flex align-items-center fw-medium">
+                    <i class="fas fa-chevron-down me-1" id="github-install-icon"></i>
                     <span>Show</span>
                 </button>
             </div>
-            
-            <div id="github-install-section" class="hidden space-y-4">
+
+            <div id="github-install-section" class="hidden d-flex flex-column gap-3">
                 <!-- Saved Repositories Section -->
-                <div class="bg-blue-50 rounded-lg p-5 border border-blue-200 shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="text-base font-bold text-gray-900">
-                            <i class="fas fa-bookmark mr-2 text-blue-600"></i>Saved Repositories
-                        </h4>
-                        <span id="saved-repos-count" class="text-xs text-gray-600 font-medium">0 saved</span>
+                <div class="card border-primary bg-primary bg-opacity-10">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h6 class="fw-bold mb-0">
+                                <i class="fas fa-bookmark me-2 text-primary"></i>Saved Repositories
+                            </h6>
+                            <span id="saved-repos-count" class="badge bg-secondary">0 saved</span>
+                        </div>
+                        <p class="small text-muted mb-2">Saved repositories are automatically loaded and their plugins appear in the Plugin Store above.</p>
+                        <div id="saved-repositories-list" class="d-flex flex-column gap-2 mb-2">
+                            <!-- Saved repositories will be loaded here -->
+                        </div>
+                        <button id="refresh-saved-repos" class="btn btn-link btn-sm text-primary p-0">
+                            <i class="fas fa-sync me-1"></i>Refresh
+                        </button>
                     </div>
-                    <p class="text-xs text-gray-600 mb-3">Saved repositories are automatically loaded and their plugins appear in the Plugin Store above.</p>
-                    <div id="saved-repositories-list" class="space-y-2 mb-3">
-                        <!-- Saved repositories will be loaded here -->
-                    </div>
-                    <button id="refresh-saved-repos" class="text-xs text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-sync mr-1"></i>Refresh
-                    </button>
                 </div>
-                
+
                 <!-- Direct Plugin Installation -->
-                <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 shadow-sm">
-                    <h4 class="text-base font-bold text-gray-900 mb-3">
-                        <i class="fas fa-code-branch mr-2 text-blue-600"></i>Install Single Plugin
-                    </h4>
-                    <p class="text-xs text-gray-600 mb-3">Install a plugin directly from its GitHub repository URL</p>
-                    <div class="space-y-2">
-                        <div class="flex gap-2">
-                            <input type="text" id="github-plugin-url" 
-                                   placeholder="https://github.com/user/ledmatrix-plugin-name" 
-                                   class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                            <button type="button" id="install-plugin-from-url" 
-                                    onclick="if(window.handleGitHubPluginInstall){window.handleGitHubPluginInstall()}else{alert('Function not loaded yet, please refresh the page')}"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md whitespace-nowrap">
-                                <i class="fas fa-download mr-2"></i>Install
+                <div class="card bg-light">
+                    <div class="card-body p-3">
+                        <h6 class="fw-bold mb-2">
+                            <i class="fas fa-code-branch me-2 text-primary"></i>Install Single Plugin
+                        </h6>
+                        <p class="small text-muted mb-2">Install a plugin directly from its GitHub repository URL</p>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex gap-2">
+                                <input type="text" id="github-plugin-url"
+                                       placeholder="https://github.com/user/ledmatrix-plugin-name"
+                                       class="form-control form-control-sm flex-grow-1">
+                                <button type="button" id="install-plugin-from-url"
+                                        onclick="if(window.handleGitHubPluginInstall){window.handleGitHubPluginInstall()}else{alert('Function not loaded yet, please refresh the page')}"
+                                        class="btn btn-primary btn-sm text-nowrap">
+                                    <i class="fas fa-download me-2"></i>Install
+                                </button>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="plugin-branch-input" class="form-label small text-muted text-nowrap mb-0">
+                                    <i class="fas fa-code-branch me-1"></i>Branch (optional):
+                                </label>
+                                <input type="text" id="plugin-branch-input"
+                                       placeholder="main, test, etc. (default: main)"
+                                       class="form-control form-control-sm flex-grow-1">
+                            </div>
+                        </div>
+                        <div id="github-plugin-status" class="mt-2 small"></div>
+                    </div>
+                </div>
+
+                <!-- Registry-Style Monorepo Installation -->
+                <div class="card bg-light">
+                    <div class="card-body p-3">
+                        <h6 class="fw-bold mb-2">
+                            <i class="fas fa-folder-open me-2 text-success"></i>Browse Plugin Registry
+                        </h6>
+                        <p class="small text-muted mb-2">Load a registry-style monorepo (like the official ledmatrix-plugins repo) to browse and install plugins</p>
+                        <div class="d-flex gap-2 mb-2">
+                            <input type="text" id="github-registry-url"
+                                   placeholder="https://github.com/user/ledmatrix-plugins"
+                                   class="form-control form-control-sm flex-grow-1">
+                            <button id="load-registry-from-url" class="btn btn-success btn-sm text-nowrap">
+                                <i class="fas fa-search me-2"></i>Load Registry
                             </button>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <label for="plugin-branch-input" class="text-xs text-gray-600 whitespace-nowrap">
-                                <i class="fas fa-code-branch mr-1"></i>Branch (optional):
-                            </label>
-                            <input type="text" id="plugin-branch-input" 
-                                   placeholder="main, test, etc. (default: main)" 
-                                   class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <div class="d-flex gap-2 mb-2">
+                            <button id="save-registry-url" class="btn btn-primary btn-sm text-nowrap">
+                                <i class="fas fa-bookmark me-2"></i>Save Repository
+                            </button>
+                            <div id="registry-status" class="flex-grow-1 small"></div>
                         </div>
-                    </div>
-                    <div id="github-plugin-status" class="mt-2 text-sm"></div>
-                </div>
-                
-                <!-- Registry-Style Monorepo Installation -->
-                <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 shadow-sm">
-                    <h4 class="text-base font-bold text-gray-900 mb-3">
-                        <i class="fas fa-folder-open mr-2 text-green-600"></i>Browse Plugin Registry
-                    </h4>
-                    <p class="text-xs text-gray-600 mb-3">Load a registry-style monorepo (like the official ledmatrix-plugins repo) to browse and install plugins</p>
-                    <div class="flex gap-2 mb-2">
-                        <input type="text" id="github-registry-url" 
-                               placeholder="https://github.com/user/ledmatrix-plugins" 
-                               class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                        <button id="load-registry-from-url" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md whitespace-nowrap">
-                            <i class="fas fa-search mr-2"></i>Load Registry
-                        </button>
-                    </div>
-                    <div class="flex gap-2 mb-3">
-                        <button id="save-registry-url" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md whitespace-nowrap">
-                            <i class="fas fa-bookmark mr-2"></i>Save Repository
-                        </button>
-                        <div id="registry-status" class="flex-1 text-sm"></div>
-                    </div>
-                    <div id="custom-registry-plugins" class="hidden">
-                        <div class="border-t border-gray-300 pt-3 mt-3">
-                            <p class="text-xs font-medium text-gray-700 mb-2">Available Plugins:</p>
-                            <div id="custom-registry-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                <!-- Custom registry plugins will be loaded here -->
+                        <div id="custom-registry-plugins" class="hidden">
+                            <div class="border-top pt-3 mt-3">
+                                <p class="small fw-medium mb-2">Available Plugins:</p>
+                                <div id="custom-registry-grid" class="row g-2">
+                                    <!-- Custom registry plugins will be loaded here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -408,35 +415,31 @@
     <!-- Plugin Configuration Modal -->
     <div id="plugin-config-modal" class="fixed inset-0 modal-backdrop flex items-center justify-center z-50" style="display: none;">
         <div class="modal-content p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="plugin-config-title" class="text-lg font-semibold">Plugin Configuration</h3>
-                <div class="flex items-center space-x-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 id="plugin-config-title" class="fw-semibold mb-0">Plugin Configuration</h6>
+                <div class="d-flex align-items-center gap-2">
                     <!-- View Toggle -->
-                    <div class="flex items-center bg-gray-100 rounded-lg p-1">
-                        <button id="view-toggle-form" class="view-toggle-btn active px-3 py-1 rounded text-sm font-medium transition-colors" data-view="form">
-                            <i class="fas fa-list mr-1"></i>Form
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button id="view-toggle-form" class="view-toggle-btn btn btn-primary" data-view="form">
+                            <i class="fas fa-list me-1"></i>Form
                         </button>
-                        <button id="view-toggle-json" class="view-toggle-btn px-3 py-1 rounded text-sm font-medium transition-colors" data-view="json">
-                            <i class="fas fa-code mr-1"></i>JSON
+                        <button id="view-toggle-json" class="view-toggle-btn btn btn-outline-secondary" data-view="json">
+                            <i class="fas fa-code me-1"></i>JSON
                         </button>
                     </div>
                     <!-- Reset Button -->
-                    <button id="reset-to-defaults-btn" class="px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded transition-colors" title="Reset to defaults">
-                        <i class="fas fa-undo mr-1"></i>Reset
+                    <button id="reset-to-defaults-btn" class="btn btn-warning btn-sm" title="Reset to defaults">
+                        <i class="fas fa-undo me-1"></i>Reset
                     </button>
-                    <button id="close-plugin-config" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button id="close-plugin-config" class="btn-close" aria-label="Close"></button>
                 </div>
             </div>
             <!-- Validation Errors Display -->
-            <div id="plugin-config-validation-errors" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <div class="flex items-start">
-                    <i class="fas fa-exclamation-circle text-red-600 mt-0.5 mr-2"></i>
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-red-800 mb-2">Configuration Validation Errors</p>
-                        <ul id="validation-errors-list" class="text-sm text-red-700 list-disc list-inside space-y-1"></ul>
-                    </div>
+            <div id="plugin-config-validation-errors" class="hidden alert alert-danger d-flex align-items-start mb-3">
+                <i class="fas fa-exclamation-circle text-danger mt-1 me-2"></i>
+                <div class="flex-grow-1">
+                    <p class="small fw-medium mb-2">Configuration Validation Errors</p>
+                    <ul id="validation-errors-list" class="small list-disc ps-3 mb-0 d-flex flex-column gap-1"></ul>
                 </div>
             </div>
             <!-- Form View -->
@@ -448,15 +451,15 @@
             <!-- JSON Editor View -->
             <div id="plugin-config-json-view" class="plugin-config-view hidden">
                 <div class="mb-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Configuration JSON</label>
-                    <textarea id="plugin-config-json-editor" class="w-full border border-gray-300 rounded-md font-mono text-sm" rows="20"></textarea>
+                    <label class="form-label small fw-medium">Configuration JSON</label>
+                    <textarea id="plugin-config-json-editor" class="form-control font-monospace small" rows="20"></textarea>
                 </div>
-                <div class="flex justify-end space-x-2 pt-2 border-t border-gray-200">
-                    <button type="button" onclick="closePluginConfigModal()" class="btn bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md">
+                <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                    <button type="button" onclick="closePluginConfigModal()" class="btn btn-secondary">
                         Cancel
                     </button>
-                    <button type="button" id="save-json-config-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                        <i class="fas fa-save mr-2"></i>Save Configuration
+                    <button type="button" id="save-json-config-btn" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Configuration
                     </button>
                 </div>
             </div>
