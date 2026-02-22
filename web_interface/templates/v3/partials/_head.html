@@ -1,0 +1,507 @@
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Matrix Control Panel - v3</title>
+
+    <!-- Google Fonts: DM Sans (headings), Source Sans 3 (body), JetBrains Mono (code) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Theme initialization (must run before CSS to prevent flash) -->
+    <script src="/static/v3/js/theme.js"></script>
+
+    <!-- Resource hints for CDN resources -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+    <!-- Bootstrap 5.3 CSS (CDN with AP mode fallback) -->
+    <script>
+    (function() {
+        var isAPMode = window.location.hostname === '192.168.4.1' ||
+                       window.location.hostname.startsWith('192.168.4.');
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = isAPMode
+            ? '/static/v3/vendor/bootstrap.min.css'
+            : 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
+        document.head.appendChild(link);
+    })();
+    </script>
+
+    <!-- HTMX for dynamic content loading -->
+    <!-- Use local files when in AP mode (192.168.4.x) to avoid CDN dependency -->
+    <script>
+        (function() {
+            // Detect AP mode by IP address
+            const isAPMode = window.location.hostname === '192.168.4.1' || 
+                           window.location.hostname.startsWith('192.168.4.');
+            
+            // In AP mode, use local files; otherwise use CDN
+            const htmxSrc = isAPMode ? '/static/v3/js/htmx.min.js' : 'https://unpkg.com/htmx.org@1.9.10';
+            const sseSrc = isAPMode ? '/static/v3/js/htmx-sse.js' : 'https://unpkg.com/htmx.org/dist/ext/sse.js';
+            const jsonEncSrc = isAPMode ? '/static/v3/js/htmx-json-enc.js' : 'https://unpkg.com/htmx.org/dist/ext/json-enc.js';
+            
+            // Load HTMX with fallback
+            function loadScript(src, fallback, onLoad) {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = onLoad || (() => {});
+                script.onerror = function() {
+                    if (fallback && src !== fallback) {
+                        console.warn(`Failed to load ${src}, trying fallback ${fallback}`);
+                        const fallbackScript = document.createElement('script');
+                        fallbackScript.src = fallback;
+                        fallbackScript.onload = onLoad || (() => {});
+                        document.head.appendChild(fallbackScript);
+                    } else {
+                        console.error(`Failed to load script: ${src}`);
+                    }
+                };
+                document.head.appendChild(script);
+            }
+            
+            // Load HTMX core
+            loadScript(htmxSrc, isAPMode ? 'https://unpkg.com/htmx.org@1.9.10' : '/static/v3/js/htmx.min.js', function() {
+                // Wait a moment for HTMX to initialize, then verify
+                setTimeout(function() {
+                    // Verify HTMX loaded
+                    if (typeof htmx === 'undefined') {
+                        console.error('HTMX failed to load, trying fallback...');
+                        const fallbackSrc = isAPMode ? 'https://unpkg.com/htmx.org@1.9.10' : '/static/v3/js/htmx.min.js';
+                        if (fallbackSrc !== htmxSrc) {
+                            loadScript(fallbackSrc, null, function() {
+                                setTimeout(function() {
+                                    if (typeof htmx !== 'undefined') {
+                                        console.log('HTMX loaded from fallback');
+                                        // Load extensions after core loads
+                                        loadScript(sseSrc, isAPMode ? 'https://unpkg.com/htmx.org/dist/ext/sse.js' : '/static/v3/js/htmx-sse.js');
+                                        loadScript(jsonEncSrc, isAPMode ? 'https://unpkg.com/htmx.org/dist/ext/json-enc.js' : '/static/v3/js/htmx-json-enc.js');
+                                    } else {
+                                        console.error('HTMX failed to load from both primary and fallback sources');
+                                        // Trigger fallback content loading
+                                        window.dispatchEvent(new Event('htmx-load-failed'));
+                                    }
+                                }, 100);
+                            });
+                        } else {
+                            console.error('HTMX failed to load and no fallback available');
+                            window.dispatchEvent(new Event('htmx-load-failed'));
+                        }
+                    } else {
+                        console.log('HTMX loaded successfully');
+                        // Load extensions after core loads
+                        loadScript(sseSrc, isAPMode ? 'https://unpkg.com/htmx.org/dist/ext/sse.js' : '/static/v3/js/htmx-sse.js');
+                        loadScript(jsonEncSrc, isAPMode ? 'https://unpkg.com/htmx.org/dist/ext/json-enc.js' : '/static/v3/js/htmx-json-enc.js');
+                    }
+                }, 100);
+            });
+        })();
+    </script>
+    <!-- Alpine.js app function stub - defined early so it's available when Alpine initializes -->
+    <!-- Full implementation loaded later via app-init.js in _scripts.html -->
+    <script>
+        // Helper function to get installed plugins with fallback
+        // Must be defined before app() function that uses it
+        async function getInstalledPluginsSafe() {
+            if (window.PluginAPI && window.PluginAPI.getInstalledPlugins) {
+                try {
+                    const plugins = await window.PluginAPI.getInstalledPlugins();
+                    // Ensure plugins is always an array
+                    const pluginsArray = Array.isArray(plugins) ? plugins : [];
+                    return { status: 'success', data: { plugins: pluginsArray } };
+                } catch (error) {
+                    console.error('Error using PluginAPI.getInstalledPlugins, falling back to direct fetch:', error);
+                    // Fall through to direct fetch
+                }
+            }
+            // Fallback to direct fetch if PluginAPI not loaded
+            const response = await fetch('/api/v3/plugins/installed');
+            return await response.json();
+        }
+
+        // Global event listener for pluginsUpdated - works even if Alpine isn't ready yet
+        // This ensures tabs update when plugins_manager.js loads plugins
+        document.addEventListener('pluginsUpdated', function(event) {
+            console.log('[GLOBAL] Received pluginsUpdated event:', event.detail?.plugins?.length || 0, 'plugins');
+            const plugins = event.detail?.plugins || [];
+
+            // Update window.installedPlugins
+            window.installedPlugins = plugins;
+
+            // Try to update Alpine component if it exists (only if using full implementation)
+            if (window.Alpine) {
+                const appElement = document.querySelector('[x-data="app()"]');
+                if (appElement && appElement._x_dataStack && appElement._x_dataStack[0]) {
+                    const appComponent = appElement._x_dataStack[0];
+                    appComponent.installedPlugins = plugins;
+                    // Only call updatePluginTabs if it's the full implementation (has _doUpdatePluginTabs)
+                    if (typeof appComponent.updatePluginTabs === 'function' &&
+                        appComponent.updatePluginTabs.toString().includes('_doUpdatePluginTabs')) {
+                        console.log('[GLOBAL] Updating plugin tabs via Alpine component (full implementation)');
+                        appComponent.updatePluginTabs();
+                        return; // Full implementation handles it, don't do direct update
+                    }
+                }
+            }
+
+            // Only do direct DOM update if full implementation isn't available yet
+            const pluginLists = document.querySelectorAll('.sidebar-plugin-list');
+            if (pluginLists.length > 0 && plugins.length > 0) {
+                pluginLists.forEach(pluginList => {
+                    // Clear existing plugin tabs (except Plugin Manager)
+                    const existingTabs = pluginList.querySelectorAll('.plugin-tab');
+                    existingTabs.forEach(tab => tab.remove());
+
+                    // Add tabs for each installed plugin
+                    plugins.forEach(plugin => {
+                        const li = document.createElement('li');
+                        li.className = 'nav-item plugin-tab';
+                        li.setAttribute('data-plugin-tab', plugin.id);
+                        const a = document.createElement('a');
+                        a.className = 'nav-link';
+                        a.href = '#';
+                        a.onclick = function(e) {
+                            e.preventDefault();
+                            // Try to set activeTab via Alpine if available
+                            if (window.Alpine) {
+                                const appElement = document.querySelector('[x-data="app()"]');
+                                if (appElement && appElement._x_dataStack && appElement._x_dataStack[0]) {
+                                    appElement._x_dataStack[0].activeTab = plugin.id;
+                                    if (typeof appElement._x_dataStack[0].updatePluginTabStates === 'function') {
+                                        appElement._x_dataStack[0].updatePluginTabStates();
+                                    }
+                                }
+                            }
+                            closeMobileNav();
+                        };
+                        a.innerHTML = `<i class="fas fa-puzzle-piece fa-fw"></i> ${(plugin.name || plugin.id).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
+                        li.appendChild(a);
+                        pluginList.appendChild(li);
+                    });
+                });
+                console.log('[GLOBAL] Updated sidebar plugin tabs directly:', plugins.length, 'tabs added');
+            }
+        });
+
+        // Define app() function early so Alpine can find it when it initializes
+        // This is a stub that will be replaced by the full implementation in app-init.js
+        (function() {
+            const isAPMode = window.location.hostname === '192.168.4.1' ||
+                           window.location.hostname.startsWith('192.168.4.');
+
+            // Create the app function - will be enhanced by full implementation later
+            window.app = function() {
+                return {
+                    activeTab: isAPMode ? 'wifi' : 'overview',
+                    installedPlugins: [],
+
+                    init() {
+                        // Try to enhance immediately with full implementation
+                        const tryEnhance = () => {
+                            if (typeof window.app === 'function') {
+                                const fullApp = window.app();
+                                // Check if this is the full implementation (has updatePluginTabs with proper implementation)
+                                if (fullApp && typeof fullApp.updatePluginTabs === 'function' && fullApp.updatePluginTabs.toString().includes('_doUpdatePluginTabs')) {
+                                    // Full implementation is available, copy all methods
+                                    // But preserve _initialized flag to prevent double init
+                                    const wasInitialized = this._initialized;
+                                    Object.assign(this, fullApp);
+                                    // Restore _initialized flag if it was set
+                                    if (wasInitialized) {
+                                        this._initialized = wasInitialized;
+                                    }
+                                    // Only call init if not already initialized
+                                    if (typeof this.init === 'function' && !this._initialized) {
+                                        this.init();
+                                    }
+                                    return true;
+                                }
+                            }
+                            return false;
+                        };
+
+                        // Set up event listener for pluginsUpdated in stub (only if not already enhanced)
+                        if (!this._pluginsUpdatedListenerSet) {
+                            const handlePluginsUpdated = (event) => {
+                                console.log('[STUB] Received pluginsUpdated event:', event.detail?.plugins?.length || 0, 'plugins');
+                                const plugins = event.detail?.plugins || [];
+                                if (typeof this.updatePluginTabs === 'function' && !this.updatePluginTabs.toString().includes('_doUpdatePluginTabs')) {
+                                    this.installedPlugins = plugins;
+                                    if (this.$nextTick && typeof this.$nextTick === 'function') {
+                                        this.$nextTick(() => {
+                                            this.updatePluginTabs();
+                                        });
+                                    } else {
+                                        setTimeout(() => {
+                                            this.updatePluginTabs();
+                                        }, 100);
+                                    }
+                                }
+                            };
+                            document.addEventListener('pluginsUpdated', handlePluginsUpdated);
+                            this._pluginsUpdatedListenerSet = true;
+                            console.log('[STUB] init: Set up pluginsUpdated event listener');
+                        }
+
+                        // Try immediately
+                        if (!tryEnhance()) {
+                            this.loadInstalledPluginsDirectly();
+                            setTimeout(tryEnhance, 10);
+
+                            let retryCount = 0;
+                            const maxRetries = 20;
+                            const checkAndUpdateTabs = () => {
+                                if (retryCount >= maxRetries) {
+                                    if (!window.installedPlugins || window.installedPlugins.length === 0) {
+                                        console.log('[STUB] checkAndUpdateTabs: Fallback - fetching plugins directly after timeout');
+                                        this.loadInstalledPluginsDirectly();
+                                    }
+                                    return;
+                                }
+                                const plugins = window.installedPlugins || this.installedPlugins || [];
+                                if (plugins.length > 0) {
+                                    console.log('[STUB] checkAndUpdateTabs: Found', plugins.length, 'plugins, updating tabs');
+                                    this.installedPlugins = plugins;
+                                    if (typeof this.updatePluginTabs === 'function') {
+                                        this.updatePluginTabs();
+                                    }
+                                } else {
+                                    retryCount++;
+                                    setTimeout(checkAndUpdateTabs, 100);
+                                }
+                            };
+                            setTimeout(checkAndUpdateTabs, 200);
+                        } else {
+                            setTimeout(() => {
+                                if (!window.installedPlugins || window.installedPlugins.length === 0) {
+                                    console.log('[STUB] init: Fallback timer - fetching plugins directly');
+                                    this.loadInstalledPluginsDirectly();
+                                }
+                            }, 2000);
+                        }
+                    },
+
+                    async loadInstalledPluginsDirectly() {
+                        try {
+                            console.log('[STUB] loadInstalledPluginsDirectly: Starting...');
+                            const ensureDOMReady = () => {
+                                return new Promise((resolve) => {
+                                    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                                        requestAnimationFrame(() => {
+                                            setTimeout(resolve, 50);
+                                        });
+                                    } else {
+                                        document.addEventListener('DOMContentLoaded', () => {
+                                            requestAnimationFrame(() => {
+                                                setTimeout(resolve, 50);
+                                            });
+                                        });
+                                    }
+                                });
+                            };
+
+                            await ensureDOMReady();
+
+                            const data = await getInstalledPluginsSafe();
+                            if (data.status === 'success') {
+                                const plugins = data.data.plugins || [];
+                                console.log('[STUB] loadInstalledPluginsDirectly: Loaded', plugins.length, 'plugins');
+                                this.installedPlugins = plugins;
+                                window.installedPlugins = plugins;
+                                document.dispatchEvent(new CustomEvent('pluginsUpdated', {
+                                    detail: { plugins: plugins }
+                                }));
+                                console.log('[STUB] loadInstalledPluginsDirectly: Dispatched pluginsUpdated event');
+                                if (typeof this.updatePluginTabs === 'function') {
+                                    if (this.$nextTick && typeof this.$nextTick === 'function') {
+                                        this.$nextTick(() => {
+                                            this.updatePluginTabs();
+                                        });
+                                    } else {
+                                        setTimeout(() => {
+                                            this.updatePluginTabs();
+                                        }, 100);
+                                    }
+                                }
+                            } else {
+                                console.warn('[STUB] loadInstalledPluginsDirectly: Failed to load plugins:', data.message);
+                            }
+                        } catch (error) {
+                            console.error('[STUB] loadInstalledPluginsDirectly: Error loading plugins:', error);
+                        }
+                    },
+
+                    // Stub methods that will be replaced by full implementation
+                    loadTabContent: function(tab) {},
+                    loadInstalledPlugins: async function() {
+                        if (typeof window.loadInstalledPlugins === 'function') {
+                            await window.loadInstalledPlugins();
+                            if (window.installedPlugins && Array.isArray(window.installedPlugins)) {
+                                this.installedPlugins = window.installedPlugins;
+                                this.updatePluginTabs();
+                            }
+                        } else if (typeof window.pluginManager?.loadInstalledPlugins === 'function') {
+                            await window.pluginManager.loadInstalledPlugins();
+                            if (window.installedPlugins && Array.isArray(window.installedPlugins)) {
+                                this.installedPlugins = window.installedPlugins;
+                                this.updatePluginTabs();
+                            }
+                        } else {
+                            await this.loadInstalledPluginsDirectly();
+                        }
+                    },
+                    updatePluginTabs: function() {
+                        if (this._updatePluginTabsTimeout) {
+                            clearTimeout(this._updatePluginTabsTimeout);
+                        }
+                        this._updatePluginTabsTimeout = setTimeout(() => {
+                            console.log('[STUB] updatePluginTabs: Executing with', this.installedPlugins?.length || 0, 'plugins');
+                            const pluginLists = document.querySelectorAll('.sidebar-plugin-list');
+                            if (pluginLists.length === 0) {
+                                console.warn('[STUB] updatePluginTabs: Sidebar plugin list not found');
+                                return;
+                            }
+                            if (!this.installedPlugins || this.installedPlugins.length === 0) {
+                                console.log('[STUB] updatePluginTabs: No plugins to display');
+                                return;
+                            }
+                            const firstList = pluginLists[0];
+                            const existingTabs = firstList.querySelectorAll('.plugin-tab');
+                            const existingIds = Array.from(existingTabs).map(tab => tab.getAttribute('data-plugin-tab')).sort().join(',');
+                            const currentIds = this.installedPlugins.map(p => p.id).sort().join(',');
+                            if (existingIds === currentIds && existingTabs.length === this.installedPlugins.length) {
+                                console.log('[STUB] updatePluginTabs: Tabs already match, skipping update');
+                                return;
+                            }
+                            pluginLists.forEach(pluginList => {
+                                const existing = pluginList.querySelectorAll('.plugin-tab');
+                                existing.forEach(tab => tab.remove());
+                                this.installedPlugins.forEach(plugin => {
+                                    const li = document.createElement('li');
+                                    li.className = 'nav-item plugin-tab';
+                                    li.setAttribute('data-plugin-tab', plugin.id);
+                                    const a = document.createElement('a');
+                                    a.className = `nav-link ${this.activeTab === plugin.id ? 'active' : ''}`;
+                                    a.href = '#';
+                                    a.onclick = (e) => {
+                                        e.preventDefault();
+                                        this.activeTab = plugin.id;
+                                        if (typeof this.updatePluginTabStates === 'function') {
+                                            this.updatePluginTabStates();
+                                        }
+                                        closeMobileNav();
+                                    };
+                                    const div = document.createElement('div');
+                                    div.textContent = plugin.name || plugin.id;
+                                    a.innerHTML = `<i class="fas fa-puzzle-piece fa-fw"></i> ${div.innerHTML}`;
+                                    li.appendChild(a);
+                                    pluginList.appendChild(li);
+                                });
+                            });
+                            console.log('[STUB] updatePluginTabs: Added', this.installedPlugins.length, 'plugin tabs');
+                        }, 100);
+                    },
+                    showNotification: function(message, type) {},
+                    escapeHtml: function(text) { return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+                };
+            };
+        })();
+    </script>
+
+    <!-- Alpine.js for reactive components -->
+    <!-- Use local file when in AP mode (192.168.4.x) to avoid CDN dependency -->
+    <script>
+        (function() {
+            // Prevent Alpine from auto-initializing by setting deferLoadingAlpine before it loads
+            window.deferLoadingAlpine = function(callback) {
+                // Wait for DOM to be ready
+                function waitForReady() {
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', waitForReady);
+                        return;
+                    }
+                    
+                    // app() is already defined in head, so we can initialize Alpine
+                    if (callback && typeof callback === 'function') {
+                        callback();
+                    } else if (window.Alpine && typeof window.Alpine.start === 'function') {
+                        // If callback not provided but Alpine is available, start it
+                        try {
+                            window.Alpine.start();
+                        } catch (e) {
+                            // Alpine may already be initialized, ignore
+                            console.warn('Alpine start error (may already be initialized):', e);
+                        }
+                    }
+                }
+                
+                waitForReady();
+            };
+            
+            // Detect AP mode by IP address
+            const isAPMode = window.location.hostname === '192.168.4.1' || 
+                           window.location.hostname.startsWith('192.168.4.');
+            
+            const alpineSrc = isAPMode ? '/static/v3/js/alpinejs.min.js' : 'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js';
+            const alpineFallback = isAPMode ? 'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js' : '/static/v3/js/alpinejs.min.js';
+            
+            const script = document.createElement('script');
+            script.defer = true;
+            script.src = alpineSrc;
+            script.onerror = function() {
+                if (alpineSrc !== alpineFallback) {
+                    const fallback = document.createElement('script');
+                    fallback.defer = true;
+                    fallback.src = alpineFallback;
+                    document.head.appendChild(fallback);
+                }
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
+
+    <!-- CodeMirror for JSON editing - lazy loaded when needed -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css"></noscript>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css"></noscript>
+    <!-- CodeMirror scripts loaded on demand when JSON editor is opened -->
+    <script>
+        // Lazy load CodeMirror when needed
+        window.loadCodeMirror = function() {
+            if (window.CodeMirror) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+                const scripts = [
+                    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/json/json.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js'
+                ];
+                
+                let loaded = 0;
+                scripts.forEach((src, index) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.defer = true;
+                    script.onload = () => {
+                        loaded++;
+                        if (loaded === scripts.length) resolve();
+                    };
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            });
+        };
+    </script>
+
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom v3 styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='v3/app.css') }}?v=20260216b">

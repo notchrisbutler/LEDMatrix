@@ -1,186 +1,212 @@
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="border-b border-gray-200 pb-4 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900">Font Management</h2>
-        <p class="mt-1 text-sm text-gray-600">Manage custom fonts, overrides, and system font configuration for your LED matrix display.</p>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="card-title mb-1">Font Management</h2>
+        <p class="card-subtitle text-muted small mb-0">Manage custom fonts, overrides, and system font configuration for your LED matrix display.</p>
     </div>
 
-    <!-- Font System Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 gap-6 mb-8">
-        <!-- Detected Fonts from Managers -->
-        <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-md font-medium text-gray-900 mb-3">Detected Manager Fonts</h3>
-            <div id="detected-fonts" class="bg-gray-800 text-gray-100 font-mono text-sm p-3 rounded h-40 overflow-y-auto">
-                <div class="text-gray-400">Loading...</div>
+    <div class="card-body">
+        <!-- Font System Overview -->
+        <div class="row g-3 mb-4">
+            <!-- Detected Fonts from Managers -->
+            <div class="col-12 col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title mb-2">Detected Manager Fonts</h6>
+                        <div id="detected-fonts" class="bg-dark text-light font-monospace small p-3 rounded" style="height: 10rem; overflow-y: auto;">
+                            <div class="text-secondary">Loading...</div>
+                        </div>
+                        <div class="form-text mt-2">Fonts currently in use by managers (auto-detected)</div>
+                    </div>
+                </div>
             </div>
-            <p class="text-sm text-gray-600 mt-2">Fonts currently in use by managers (auto-detected)</p>
-        </div>
 
-        <!-- Available Fonts -->
-        <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-md font-medium text-gray-900 mb-3">Available Font Families</h3>
-            <div id="available-fonts" class="bg-gray-800 text-gray-100 font-mono text-sm p-3 rounded h-40 overflow-y-auto">
-                <div class="text-gray-400">Loading...</div>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">All available font families in the system</p>
-        </div>
-    </div>
-
-    <!-- Font Upload -->
-    <div class="bg-gray-50 rounded-lg p-4 mb-8">
-        <h3 class="text-md font-medium text-gray-900 mb-4">Upload Custom Fonts</h3>
-        <p class="text-sm text-gray-600 mb-4">Upload your own TTF, OTF, or BDF font files to use in your LED matrix display.</p>
-
-        <div class="font-upload-area" id="font-upload-area">
-            <div class="upload-dropzone" id="upload-dropzone">
-                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
-                <p class="text-gray-600">Drag and drop font files here, or click to select</p>
-                <p class="text-sm text-gray-500">Supports .ttf, .otf, and .bdf files</p>
-                <input type="file" id="font-file-input" accept=".ttf,.otf,.bdf" multiple style="display: none;">
+            <!-- Available Fonts -->
+            <div class="col-12 col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title mb-2">Available Font Families</h6>
+                        <div id="available-fonts" class="bg-dark text-light font-monospace small p-3 rounded" style="height: 10rem; overflow-y: auto;">
+                            <div class="text-secondary">Loading...</div>
+                        </div>
+                        <div class="form-text mt-2">All available font families in the system</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="upload-form" id="upload-form" style="display: none;">
-            <div class="mt-4 p-4 bg-white rounded border">
-                <h4 class="text-sm font-medium text-gray-900 mb-3">Selected Files</h4>
-                <div id="selected-files" class="space-y-2 mb-4">
-                    <!-- Files will be listed here -->
+        <!-- Font Upload -->
+        <div class="card bg-light mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-2">Upload Custom Fonts</h5>
+                <p class="small text-muted mb-3">Upload your own TTF, OTF, or BDF font files to use in your LED matrix display.</p>
+
+                <div class="font-upload-area" id="font-upload-area">
+                    <div class="upload-dropzone" id="upload-dropzone">
+                        <i class="fas fa-cloud-upload-alt fs-1 text-muted d-block mb-3"></i>
+                        <p class="text-muted">Drag and drop font files here, or click to select</p>
+                        <p class="small text-muted">Supports .ttf, .otf, and .bdf files</p>
+                        <input type="file" id="font-file-input" accept=".ttf,.otf,.bdf" multiple style="display: none;">
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Font Family Name</label>
-                        <input type="text" id="upload-font-family" class="form-control" placeholder="e.g., my-custom-font">
-                        <p class="text-sm text-gray-600 mt-1">Custom name for this font (letters, numbers, underscores, hyphens)</p>
+                <div class="upload-form" id="upload-form" style="display: none;">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">Selected Files</h6>
+                            <div id="selected-files" class="mb-3">
+                                <!-- Files will be listed here -->
+                            </div>
+
+                            <div class="row g-3 align-items-end">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-medium">Font Family Name</label>
+                                    <input type="text" id="upload-font-family" class="form-control" placeholder="e.g., my-custom-font">
+                                    <div class="form-text">Custom name for this font (letters, numbers, underscores, hyphens)</div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="d-flex gap-2">
+                                        <button type="button" id="upload-fonts-btn" class="btn btn-primary">
+                                            <i class="fas fa-upload me-2"></i>Upload Fonts
+                                        </button>
+                                        <button type="button" id="cancel-upload-btn" class="btn btn-outline-secondary">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-end">
-                        <button type="button" id="upload-fonts-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2">
-                            <i class="fas fa-upload mr-2"></i>Upload Fonts
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" class="mt-3 d-none">
+                    <div class="card">
+                        <div class="card-body py-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="small fw-medium">Uploading...</span>
+                                <span id="upload-percent" class="small">0%</span>
+                            </div>
+                            <div class="progress" style="height: 0.5rem;">
+                                <div id="upload-progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Font Overrides -->
+        <div class="card bg-light mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-2">Element Font Overrides</h5>
+                <p class="small text-muted mb-3">Override fonts for specific display elements. Changes take effect immediately.</p>
+
+                <!-- Add New Override -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-medium small">Element</label>
+                                <select id="override-element" class="form-select form-select-sm">
+                                    <option value="">Select an element...</option>
+                                    <optgroup label="Sports">
+                                        <option value="nfl.live.score">NFL Live Score</option>
+                                        <option value="nfl.live.time">NFL Live Time</option>
+                                        <option value="nfl.live.team">NFL Live Team</option>
+                                        <option value="mlb.live.score">MLB Live Score</option>
+                                        <option value="nhl.live.score">NHL Live Score</option>
+                                        <option value="nba.live.score">NBA Live Score</option>
+                                    </optgroup>
+                                    <optgroup label="Clock">
+                                        <option value="clock.time">Clock Time</option>
+                                        <option value="clock.date">Clock Date</option>
+                                    </optgroup>
+                                    <optgroup label="Weather">
+                                        <option value="weather.current">Weather Current</option>
+                                        <option value="weather.forecast">Weather Forecast</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-medium small">Font Family</label>
+                                <select id="override-family" class="form-select form-select-sm">
+                                    <option value="">Use default</option>
+                                    <!-- Dynamically populated from font catalog -->
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-medium small">Font Size</label>
+                                <select id="override-size" class="form-select form-select-sm">
+                                    <option value="">Use default</option>
+                                    <option value="xs">Extra Small (6px)</option>
+                                    <option value="sm">Small (8px)</option>
+                                    <option value="md">Medium (10px)</option>
+                                    <option value="lg">Large (12px)</option>
+                                    <option value="xl">Extra Large (14px)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <button id="add-override-btn" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus me-2"></i>Add Override
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Overrides List -->
+                <div id="overrides-container">
+                    <h6 class="fw-medium mb-2">Current Overrides</h6>
+                    <div id="overrides-list" class="list-group">
+                        <!-- Overrides will be populated here -->
+                        <div class="list-group-item text-muted small fst-italic">No font overrides configured</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Font Preview -->
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Font Preview</h5>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div id="font-preview-container" class="border rounded bg-black p-3 d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                            <img id="font-preview-image" src="" alt="Font preview" class="mw-100" style="display: none;">
+                            <span id="font-preview-loading" class="text-secondary">Select a font to preview</span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium small">Preview Text</label>
+                            <input type="text" id="preview-text" value="Sample Text 123" class="form-control form-control-sm">
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-medium small">Font Family</label>
+                                <select id="preview-family" class="form-select form-select-sm">
+                                    <!-- Dynamically populated from font catalog -->
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-medium small">Font Size</label>
+                                <select id="preview-size" class="form-select form-select-sm">
+                                    <option value="xs">XS (6px)</option>
+                                    <option value="sm">SM (8px)</option>
+                                    <option value="md">MD (10px)</option>
+                                    <option value="lg">LG (12px)</option>
+                                    <option value="xl">XL (14px)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="update-preview-btn" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-eye me-2"></i>Update Preview
                         </button>
-                        <button type="button" id="cancel-upload-btn" class="btn bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 ml-2">
-                            <i class="fas fa-times mr-2"></i>Cancel
-                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Upload Progress -->
-        <div id="upload-progress" class="mt-4 hidden">
-            <div class="bg-white rounded p-4 border">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium">Uploading...</span>
-                    <span id="upload-percent" class="text-sm">0%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div id="upload-progress-bar" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Font Overrides -->
-    <div class="bg-gray-50 rounded-lg p-4 mb-8">
-        <h3 class="text-md font-medium text-gray-900 mb-4">Element Font Overrides</h3>
-        <p class="text-sm text-gray-600 mb-4">Override fonts for specific display elements. Changes take effect immediately.</p>
-
-        <!-- Add New Override -->
-        <div class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-4 p-4 bg-white rounded border">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Element</label>
-                <select id="override-element" class="form-control text-sm">
-                    <option value="">Select an element...</option>
-                    <optgroup label="Sports">
-                        <option value="nfl.live.score">NFL Live Score</option>
-                        <option value="nfl.live.time">NFL Live Time</option>
-                        <option value="nfl.live.team">NFL Live Team</option>
-                        <option value="mlb.live.score">MLB Live Score</option>
-                        <option value="nhl.live.score">NHL Live Score</option>
-                        <option value="nba.live.score">NBA Live Score</option>
-                    </optgroup>
-                    <optgroup label="Clock">
-                        <option value="clock.time">Clock Time</option>
-                        <option value="clock.date">Clock Date</option>
-                    </optgroup>
-                    <optgroup label="Weather">
-                        <option value="weather.current">Weather Current</option>
-                        <option value="weather.forecast">Weather Forecast</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Font Family</label>
-                <select id="override-family" class="form-control text-sm">
-                    <option value="">Use default</option>
-                    <!-- Dynamically populated from font catalog -->
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-                <select id="override-size" class="form-control text-sm">
-                    <option value="">Use default</option>
-                    <option value="xs">Extra Small (6px)</option>
-                    <option value="sm">Small (8px)</option>
-                    <option value="md">Medium (10px)</option>
-                    <option value="lg">Large (12px)</option>
-                    <option value="xl">Extra Large (14px)</option>
-                </select>
-            </div>
-
-            <div class="flex items-end">
-                <button id="add-override-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2">
-                    <i class="fas fa-plus mr-2"></i>Add Override
-                </button>
-            </div>
-        </div>
-
-        <!-- Current Overrides List -->
-        <div id="overrides-container">
-            <h4 class="text-sm font-medium text-gray-900 mb-3">Current Overrides</h4>
-            <div id="overrides-list" class="space-y-2">
-                <!-- Overrides will be populated here -->
-                <div class="text-gray-500 text-sm italic">No font overrides configured</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Font Preview -->
-    <div class="bg-gray-50 rounded-lg p-4">
-        <h3 class="text-md font-medium text-gray-900 mb-4">Font Preview</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 gap-6">
-            <div>
-                <div id="font-preview-container" class="border border-gray-300 bg-black rounded p-4 min-h-[100px] flex items-center justify-center">
-                    <img id="font-preview-image" src="" alt="Font preview" class="max-w-full" style="display: none;">
-                    <span id="font-preview-loading" class="text-gray-400">Select a font to preview</span>
-                </div>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Preview Text</label>
-                    <input type="text" id="preview-text" value="Sample Text 123" class="form-control text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Font Family</label>
-                        <select id="preview-family" class="form-control text-sm">
-                            <!-- Dynamically populated from font catalog -->
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-                        <select id="preview-size" class="form-control text-sm">
-                            <option value="xs">XS (6px)</option>
-                            <option value="sm">SM (8px)</option>
-                            <option value="md">MD (10px)</option>
-                            <option value="lg">LG (12px)</option>
-                            <option value="xl">XL (14px)</option>
-                        </select>
-                    </div>
-                </div>
-                <button id="update-preview-btn" class="btn bg-gray-600 hover:bg-gray-700 text-white px-4 py-2">
-                    <i class="fas fa-eye mr-2"></i>Update Preview
-                </button>
             </div>
         </div>
     </div>
@@ -199,10 +225,10 @@
         }, 50);
         return;
     }
-    
+
     // Mark script as loaded
     window._fontsScriptLoaded = true;
-    
+
     // Initialize global variables on window object
     window.fontCatalog = window.fontCatalog || {};
     window.fontTokens = window.fontTokens || {};
@@ -245,7 +271,7 @@ function initializeFontsTab() {
 
     // Reset retry counter on successful init
     initRetryCount = 0;
-    
+
     // showNotification is provided by the notification widget (notification.js)
     // Fallback only if widget hasn't loaded yet
     if (typeof window.showNotification !== 'function') {
@@ -264,29 +290,29 @@ function initializeFontsTab() {
     const cancelUploadBtn = document.getElementById('cancel-upload-btn');
     const addOverrideBtn = document.getElementById('add-override-btn');
     const updatePreviewBtn = document.getElementById('update-preview-btn');
-    
+
     if (uploadDropzone && fontFileInput) {
         uploadDropzone.addEventListener('click', () => {
             fontFileInput.click();
         });
     }
-    
+
     if (fontFileInput) {
         fontFileInput.addEventListener('change', handleFileSelection);
     }
-    
+
     if (uploadFontsBtn) {
         uploadFontsBtn.addEventListener('click', uploadSelectedFonts);
     }
-    
+
     if (cancelUploadBtn) {
         cancelUploadBtn.addEventListener('click', cancelFontUpload);
     }
-    
+
     if (addOverrideBtn) {
         addOverrideBtn.addEventListener('click', addFontOverride);
     }
-    
+
     if (updatePreviewBtn) {
         updatePreviewBtn.addEventListener('click', updateFontPreview);
     }
@@ -323,7 +349,7 @@ window.initializeFontsTab = initializeFontsTab;
     function tryInitializeFontsTab() {
         const fontsContent = document.getElementById('fonts-content');
         const detectedFonts = document.getElementById('detected-fonts');
-        
+
         if (fontsContent && detectedFonts) {
             console.log('Fonts content detected, initializing...');
             setTimeout(() => {
@@ -331,7 +357,7 @@ window.initializeFontsTab = initializeFontsTab;
             }, 50);
         }
     }
-    
+
     // Set up HTMX event listener for when content is swapped
     if (typeof document.body !== 'undefined') {
         document.body.addEventListener('htmx:afterSettle', function(event) {
@@ -343,7 +369,7 @@ window.initializeFontsTab = initializeFontsTab;
             }
         });
     }
-    
+
     // Also check if content is already loaded (e.g., if script runs after HTMX swap)
     // This handles the case where the script executes after HTMX has already swapped
     if (document.readyState === 'loading') {
@@ -378,8 +404,8 @@ async function loadFontData() {
     }
 
     // Show loading states
-    detectedContainer.innerHTML = '<div class="text-blue-400">Loading font data...</div>';
-    availableContainer.innerHTML = '<div class="text-blue-400">Loading font data...</div>';
+    detectedContainer.innerHTML = '<div class="text-info">Loading font data...</div>';
+    availableContainer.innerHTML = '<div class="text-info">Loading font data...</div>';
 
     try {
         // Use absolute URLs to ensure they work when loaded via HTMX
@@ -414,7 +440,7 @@ async function loadFontData() {
         window.fontCatalog = catalogData.data.catalog || {};
         window.fontTokens = tokensData.data.tokens || {};
         window.fontOverrides = overridesData.data.overrides || {};
-        
+
         // Update local variable references
         fontCatalog = window.fontCatalog;
         fontTokens = window.fontTokens;
@@ -423,7 +449,7 @@ async function loadFontData() {
         // Update displays
         updateDetectedFontsDisplay();
         updateAvailableFontsDisplay();
-        
+
         console.log('Font data loaded successfully', {
             catalogSize: Object.keys(fontCatalog).length,
             tokensSize: Object.keys(fontTokens).length,
@@ -433,8 +459,8 @@ async function loadFontData() {
         console.error('Error loading font data:', error);
 
         // Show error states
-        detectedContainer.innerHTML = '<div class="text-red-400">Error loading font data. Please refresh the page.</div>';
-        availableContainer.innerHTML = '<div class="text-red-400">Error loading font data. Please refresh the page.</div>';
+        detectedContainer.innerHTML = '<div class="text-danger">Error loading font data. Please refresh the page.</div>';
+        availableContainer.innerHTML = '<div class="text-danger">Error loading font data. Please refresh the page.</div>';
 
         // Only show notification if showNotification is available
         if (typeof showNotification === 'function') {
@@ -481,7 +507,7 @@ function updateDetectedFontsDisplay() {
     }
 
     if (Object.keys(detectedFonts).length === 0) {
-        container.innerHTML = '<div class="text-gray-400">No fonts detected yet (managers will register fonts when they render)</div>';
+        container.innerHTML = '<div class="text-secondary">No fonts detected yet (managers will register fonts when they render)</div>';
         return;
     }
 
@@ -498,7 +524,7 @@ function updateAvailableFontsDisplay() {
     if (!container) return;
 
     if (Object.keys(fontCatalog).length === 0) {
-        container.innerHTML = '<div class="text-gray-400">No fonts available</div>';
+        container.innerHTML = '<div class="text-secondary">No fonts available</div>';
         return;
     }
 
@@ -516,15 +542,15 @@ function updateAvailableFontsDisplay() {
     container.innerHTML = '';
     fontEntries.forEach(font => {
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between py-1 border-b border-gray-700 last:border-0';
+        row.className = 'd-flex align-items-center justify-content-between py-1 border-bottom border-secondary';
 
         const nameSpan = document.createElement('span');
-        nameSpan.className = 'truncate flex-1';
+        nameSpan.className = 'text-truncate flex-grow-1';
         nameSpan.textContent = font.displayName;
 
         if (font.fontType) {
             const typeSpan = document.createElement('span');
-            typeSpan.className = 'text-gray-500 ml-1';
+            typeSpan.className = 'text-secondary ms-1';
             typeSpan.textContent = `(${font.fontType})`;
             nameSpan.appendChild(typeSpan);
         }
@@ -533,12 +559,12 @@ function updateAvailableFontsDisplay() {
 
         if (font.isSystem) {
             const systemBadge = document.createElement('span');
-            systemBadge.className = 'text-gray-600 text-xs ml-2';
-            systemBadge.textContent = '[system]';
+            systemBadge.className = 'badge bg-secondary ms-2';
+            systemBadge.textContent = 'system';
             row.appendChild(systemBadge);
         } else {
             const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'text-red-400 hover:text-red-300 text-xs ml-2';
+            deleteBtn.className = 'btn btn-link btn-sm text-danger p-0 ms-2';
             deleteBtn.title = 'Delete font';
             deleteBtn.textContent = '[delete]';
             deleteBtn.dataset.fontName = font.name;
@@ -748,7 +774,7 @@ function displayCurrentOverrides() {
     if (!container) return;
 
     if (Object.keys(fontOverrides).length === 0) {
-        container.innerHTML = '<div class="text-gray-500 text-sm italic">No font overrides configured</div>';
+        container.innerHTML = '<div class="list-group-item text-muted small fst-italic">No font overrides configured</div>';
         return;
     }
 
@@ -768,25 +794,25 @@ function displayCurrentOverrides() {
         }
 
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between p-3 bg-white rounded border';
+        row.className = 'list-group-item d-flex align-items-center justify-content-between';
 
         const infoDiv = document.createElement('div');
 
         const nameDiv = document.createElement('div');
-        nameDiv.className = 'font-medium text-gray-900';
+        nameDiv.className = 'fw-medium';
         nameDiv.textContent = elementName;
 
         const settingsDiv = document.createElement('div');
-        settingsDiv.className = 'text-sm text-gray-600';
+        settingsDiv.className = 'small text-muted';
         settingsDiv.textContent = settings.join(', ');
 
         infoDiv.appendChild(nameDiv);
         infoDiv.appendChild(settingsDiv);
 
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm';
+        deleteBtn.className = 'btn btn-outline-danger btn-sm';
         const trashIcon = document.createElement('i');
-        trashIcon.className = 'fas fa-trash mr-1';
+        trashIcon.className = 'fas fa-trash me-1';
         deleteBtn.appendChild(trashIcon);
         deleteBtn.appendChild(document.createTextNode('Remove'));
         deleteBtn.dataset.elementKey = elementKey;
@@ -932,10 +958,10 @@ function showUploadForm() {
     selectedFilesContainer.innerHTML = '';
     selectedFontFiles.forEach(file => {
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between p-2 bg-gray-100 rounded';
+        row.className = 'd-flex align-items-center justify-content-between p-2 bg-light rounded mb-1';
 
         const span = document.createElement('span');
-        span.className = 'text-sm';
+        span.className = 'small';
         span.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
 
         row.appendChild(span);
@@ -1039,11 +1065,11 @@ async function uploadSelectedFonts() {
 }
 
 function showUploadProgress() {
-    document.getElementById('upload-progress').classList.remove('hidden');
+    document.getElementById('upload-progress').classList.remove('d-none');
 }
 
 function hideUploadProgress() {
-    document.getElementById('upload-progress').classList.add('hidden');
+    document.getElementById('upload-progress').classList.add('d-none');
 }
 
 function updateUploadProgress(percent) {

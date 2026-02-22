@@ -1,56 +1,58 @@
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="border-b border-gray-200 pb-4 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900">Cache Management</h2>
-        <p class="mt-1 text-sm text-gray-600">View and manage cached API responses. Cache files help reduce API calls and improve performance.</p>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="card-title mb-1">Cache Management</h2>
+        <p class="card-subtitle text-muted small mb-0">View and manage cached API responses. Cache files help reduce API calls and improve performance.</p>
     </div>
 
-    <!-- Cache Info -->
-    <div id="cache-info" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-blue-900">Cache Directory</p>
-                <p id="cache-dir" class="text-sm text-blue-700 font-mono mt-1">Loading...</p>
+    <div class="card-body">
+        <!-- Cache Info -->
+        <div id="cache-info" class="card bg-light mb-4">
+            <div class="card-body d-flex align-items-center justify-content-between py-3">
+                <div>
+                    <p class="fw-medium mb-1 small">Cache Directory</p>
+                    <p id="cache-dir" class="mb-0 small font-monospace text-muted">Loading...</p>
+                </div>
+                <button id="refresh-cache-btn" class="btn btn-primary btn-sm">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
             </div>
-            <button id="refresh-cache-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
-                <i class="fas fa-sync-alt mr-2"></i>Refresh
-            </button>
         </div>
-    </div>
 
-    <!-- Cache Files Table -->
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cache Key</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Modified</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="cache-files-tbody" class="bg-white divide-y divide-gray-200">
-                <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
-                        <p>Loading cache files...</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <!-- Cache Files Table -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Cache Key</th>
+                        <th>Age</th>
+                        <th>Size</th>
+                        <th>Modified</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="cache-files-tbody">
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class="fas fa-spinner fa-spin fs-4 d-block mb-2"></i>
+                            <p class="mb-0">Loading cache files...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Empty State -->
-    <div id="cache-empty" class="hidden text-center py-12">
-        <i class="fas fa-database text-4xl text-gray-400 mb-4"></i>
-        <p class="text-gray-600">No cache files found</p>
-        <p class="text-sm text-gray-500 mt-2">Cache files will appear here as plugins fetch data from APIs</p>
-    </div>
+        <!-- Empty State -->
+        <div id="cache-empty" class="d-none text-center py-5">
+            <i class="fas fa-database fs-1 text-muted d-block mb-3"></i>
+            <p class="text-muted">No cache files found</p>
+            <p class="small text-muted">Cache files will appear here as plugins fetch data from APIs</p>
+        </div>
 
-    <!-- Error State -->
-    <div id="cache-error" class="hidden text-center py-12">
-        <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
-        <p class="text-red-600" id="cache-error-message">Error loading cache files</p>
+        <!-- Error State -->
+        <div id="cache-error" class="d-none text-center py-5">
+            <i class="fas fa-exclamation-triangle fs-1 text-danger d-block mb-3"></i>
+            <p class="text-danger" id="cache-error-message">Error loading cache files</p>
+        </div>
     </div>
 </div>
 
@@ -58,7 +60,7 @@
 // Initialize cache management when partial loads
 (function() {
     loadCacheFiles();
-    
+
     // Event listeners
     document.getElementById('refresh-cache-btn').addEventListener('click', loadCacheFiles);
 })();
@@ -68,19 +70,19 @@ function loadCacheFiles() {
     const emptyState = document.getElementById('cache-empty');
     const errorState = document.getElementById('cache-error');
     const errorMessage = document.getElementById('cache-error-message');
-    
+
     // Show loading state
     tbody.innerHTML = `
         <tr>
-            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
-                <p>Loading cache files...</p>
+            <td colspan="5" class="text-center py-4 text-muted">
+                <i class="fas fa-spinner fa-spin fs-4 d-block mb-2"></i>
+                <p class="mb-0">Loading cache files...</p>
             </td>
         </tr>
     `;
-    emptyState.classList.add('hidden');
-    errorState.classList.add('hidden');
-    
+    emptyState.classList.add('d-none');
+    errorState.classList.add('d-none');
+
     fetch('/api/v3/cache/list')
         .then(response => response.json())
         .then(data => {
@@ -100,22 +102,21 @@ function displayCacheFiles(data) {
     const tbody = document.getElementById('cache-files-tbody');
     const emptyState = document.getElementById('cache-empty');
     const errorState = document.getElementById('cache-error');
-    
-    errorState.classList.add('hidden');
-    
+
+    errorState.classList.add('d-none');
+
     if (!data.cache_files || data.cache_files.length === 0) {
         tbody.innerHTML = '';
-        emptyState.classList.remove('hidden');
+        emptyState.classList.remove('d-none');
         return;
     }
-    
-    emptyState.classList.add('hidden');
+
+    emptyState.classList.add('d-none');
     tbody.innerHTML = '';
-    
+
     data.cache_files.forEach(cacheFile => {
         const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50';
-        
+
         // Format modified time
         const modifiedDate = new Date(cacheFile.modified_datetime);
         const modifiedStr = modifiedDate.toLocaleString('en-US', {
@@ -126,40 +127,36 @@ function displayCacheFiles(data) {
             second: '2-digit',
             hour12: false
         });
-        
-        // Age color coding
-        let ageClass = 'text-gray-600';
+
+        // Age badge color coding
+        let ageBadgeClass = 'bg-secondary';
         if (cacheFile.age_seconds < 300) { // Less than 5 minutes
-            ageClass = 'text-green-600 font-medium';
+            ageBadgeClass = 'bg-success';
         } else if (cacheFile.age_seconds < 3600) { // Less than 1 hour
-            ageClass = 'text-yellow-600';
+            ageBadgeClass = 'bg-warning text-dark';
         } else { // Older than 1 hour
-            ageClass = 'text-red-600';
+            ageBadgeClass = 'bg-danger';
         }
-        
+
         row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 font-mono">${escapeHtml(cacheFile.key)}</div>
-                <div class="text-xs text-gray-500">${escapeHtml(cacheFile.filename)}</div>
+            <td>
+                <div class="fw-medium font-monospace small">${escapeHtml(cacheFile.key)}</div>
+                <div class="text-muted small">${escapeHtml(cacheFile.filename)}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm ${ageClass}">${escapeHtml(cacheFile.age_display)}</span>
+            <td>
+                <span class="badge ${ageBadgeClass}">${escapeHtml(cacheFile.age_display)}</span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm text-gray-600">${escapeHtml(cacheFile.size_display)}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm text-gray-600">${escapeHtml(modifiedStr)}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button onclick="deleteCacheFile('${escapeHtml(cacheFile.key)}')" 
-                        class="text-red-600 hover:text-red-900 px-3 py-1 rounded hover:bg-red-50 transition-colors"
+            <td class="small text-muted">${escapeHtml(cacheFile.size_display)}</td>
+            <td class="small text-muted">${escapeHtml(modifiedStr)}</td>
+            <td class="text-end">
+                <button onclick="deleteCacheFile('${escapeHtml(cacheFile.key)}')"
+                        class="btn btn-outline-danger btn-sm"
                         title="Delete cache file">
-                    <i class="fas fa-trash mr-1"></i>Delete
+                    <i class="fas fa-trash me-1"></i>Delete
                 </button>
             </td>
         `;
-        
+
         tbody.appendChild(row);
     });
 }
@@ -170,7 +167,6 @@ function updateCacheInfo(cacheDir) {
         cacheDirEl.textContent = cacheDir;
     } else {
         cacheDirEl.textContent = 'Not configured';
-        cacheDirEl.classList.add('text-gray-500');
     }
 }
 
@@ -178,7 +174,7 @@ function deleteCacheFile(key) {
     if (!confirm(`Are you sure you want to delete the cache file for "${key}"?`)) {
         return;
     }
-    
+
     fetch('/api/v3/cache/delete', {
         method: 'POST',
         headers: {
@@ -212,10 +208,10 @@ function showError(message) {
     const errorState = document.getElementById('cache-error');
     const errorMessage = document.getElementById('cache-error-message');
     const emptyState = document.getElementById('cache-empty');
-    
+
     tbody.innerHTML = '';
-    emptyState.classList.add('hidden');
-    errorState.classList.remove('hidden');
+    emptyState.classList.add('d-none');
+    errorState.classList.remove('d-none');
     errorMessage.textContent = message;
 }
 

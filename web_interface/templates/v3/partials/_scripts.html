@@ -1,0 +1,403 @@
+    <!-- Notifications -->
+    <div id="notifications" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- SSE connection for real-time updates -->
+
+    <!-- Extracted inline JS: SSE connection and stats updates -->
+    <script src="/static/v3/js/sse-manager.js" defer></script>
+
+    <!-- Extracted inline JS: Full app() implementation (replaces stub from _head.html) -->
+    <script src="/static/v3/js/app-init.js" defer></script>
+
+    <!-- Extracted inline JS: Plugin tabs, config helpers, display preview, plugin CRUD -->
+    <script src="/static/v3/js/plugin-tabs.js" defer></script>
+
+    <!-- Extracted inline JS: HTMX event handlers and error handling -->
+    <script src="/static/v3/js/htmx-config.js" defer></script>
+
+    <!-- Custom v3 JavaScript -->
+    <script src="{{ url_for('static', filename='v3/app.js') }}" defer></script>
+    
+    <!-- Modular Plugin Management JavaScript -->
+    <!-- Load utilities first -->
+    <script src="{{ url_for('static', filename='v3/js/utils/error_handler.js') }}" defer></script>
+    
+    <!-- Load core API client first (used by other modules) -->
+    <script src="{{ url_for('static', filename='v3/js/plugins/api_client.js') }}" defer></script>
+    
+    <!-- Load plugin management modules -->
+    <script src="{{ url_for('static', filename='v3/js/plugins/store_manager.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='v3/js/plugins/state_manager.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='v3/js/plugins/config_manager.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='v3/js/plugins/install_manager.js') }}" defer></script>
+    
+    <!-- Load config utilities -->
+    <script src="{{ url_for('static', filename='v3/js/config/diff_viewer.js') }}" defer></script>
+    
+    <!-- Widget Registry System (bundled) -->
+    <script src="{{ url_for('static', filename='v3/js/widgets.bundle.js') }}" defer></script>
+    
+    <!-- Legacy plugins_manager.js (for backward compatibility during migration) -->
+    <script src="{{ url_for('static', filename='v3/plugins_manager.js') }}?v=20260216b" defer></script>
+    
+    <!-- Custom feeds table helper functions -->
+    <script>
+        function addCustomFeedRow(fieldId, fullKey, maxItems, pluginId) {
+            const tbody = document.getElementById(fieldId + '_tbody');
+            if (!tbody) return;
+            
+            const currentRows = tbody.querySelectorAll('.custom-feed-row');
+            if (currentRows.length >= maxItems) {
+                alert(`Maximum ${maxItems} feeds allowed`);
+                return;
+            }
+            
+            const newIndex = currentRows.length;
+            const newRow = document.createElement('tr');
+            newRow.className = 'custom-feed-row';
+            newRow.setAttribute('data-index', newIndex);
+            
+            // Create name cell
+            const nameCell = document.createElement('td');
+            nameCell.className = 'px-4 py-3 whitespace-nowrap';
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.name = `${fullKey}.${newIndex}.name`;
+            nameInput.value = '';
+            nameInput.className = 'block w-full px-2 py-1 border border-gray-300 rounded text-sm';
+            nameInput.placeholder = 'Feed Name';
+            nameInput.required = true;
+            nameCell.appendChild(nameInput);
+            
+            // Create URL cell
+            const urlCell = document.createElement('td');
+            urlCell.className = 'px-4 py-3 whitespace-nowrap';
+            const urlInput = document.createElement('input');
+            urlInput.type = 'url';
+            urlInput.name = `${fullKey}.${newIndex}.url`;
+            urlInput.value = '';
+            urlInput.className = 'block w-full px-2 py-1 border border-gray-300 rounded text-sm';
+            urlInput.placeholder = 'https://example.com/feed';
+            urlInput.required = true;
+            urlCell.appendChild(urlInput);
+            
+            // Create logo cell
+            const logoCell = document.createElement('td');
+            logoCell.className = 'px-4 py-3 whitespace-nowrap';
+            const logoContainer = document.createElement('div');
+            logoContainer.className = 'flex items-center space-x-2';
+            
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.id = `${fieldId}_logo_${newIndex}`;
+            fileInput.accept = 'image/png,image/jpeg,image/bmp,image/gif';
+            fileInput.style.display = 'none';
+            fileInput.dataset.index = String(newIndex);
+            // Use addEventListener with dataset index to allow reindexing
+            fileInput.addEventListener('change', function(e) {
+                const idx = parseInt(e.target.dataset.index || '0', 10);
+                handleCustomFeedLogoUpload(e, fieldId, idx, pluginId, fullKey);
+            });
+            
+            const uploadButton = document.createElement('button');
+            uploadButton.type = 'button';
+            uploadButton.className = 'px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded';
+            // Use fileInput directly instead of getElementById for reindexing compatibility
+            uploadButton.addEventListener('click', function() {
+                fileInput.click();
+            });
+            const uploadIcon = document.createElement('i');
+            uploadIcon.className = 'fas fa-upload mr-1';
+            uploadButton.appendChild(uploadIcon);
+            uploadButton.appendChild(document.createTextNode(' Upload'));
+            
+            const noLogoSpan = document.createElement('span');
+            noLogoSpan.className = 'text-xs text-gray-400';
+            noLogoSpan.textContent = 'No logo';
+            
+            logoContainer.appendChild(fileInput);
+            logoContainer.appendChild(uploadButton);
+            logoContainer.appendChild(noLogoSpan);
+            logoCell.appendChild(logoContainer);
+            
+            // Create enabled cell
+            const enabledCell = document.createElement('td');
+            enabledCell.className = 'px-4 py-3 whitespace-nowrap text-center';
+            const enabledInput = document.createElement('input');
+            enabledInput.type = 'checkbox';
+            enabledInput.name = `${fullKey}.${newIndex}.enabled`;
+            enabledInput.checked = true;
+            enabledInput.value = 'true';
+            enabledInput.className = 'h-4 w-4 text-blue-600';
+            enabledCell.appendChild(enabledInput);
+            
+            // Create remove cell
+            const removeCell = document.createElement('td');
+            removeCell.className = 'px-4 py-3 whitespace-nowrap text-center';
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'text-red-600 hover:text-red-800 px-2 py-1';
+            // Use addEventListener instead of string-based onclick to prevent injection
+            removeButton.addEventListener('click', function() {
+                removeCustomFeedRow(this);
+            });
+            const removeIcon = document.createElement('i');
+            removeIcon.className = 'fas fa-trash';
+            removeButton.appendChild(removeIcon);
+            removeCell.appendChild(removeButton);
+            
+            // Append all cells to row
+            newRow.appendChild(nameCell);
+            newRow.appendChild(urlCell);
+            newRow.appendChild(logoCell);
+            newRow.appendChild(enabledCell);
+            newRow.appendChild(removeCell);
+            tbody.appendChild(newRow);
+        }
+        
+        function removeCustomFeedRow(button) {
+            const row = button.closest('tr');
+            if (!row) return;
+            
+            if (confirm('Remove this feed?')) {
+                const tbody = row.parentElement;
+                if (!tbody) return;
+                
+                row.remove();
+                
+                // Re-index remaining rows
+                const rows = tbody.querySelectorAll('.custom-feed-row');
+                rows.forEach((r, index) => {
+                    const oldIndex = r.getAttribute('data-index');
+                    r.setAttribute('data-index', index);
+                    // Update all input names with new index
+                    r.querySelectorAll('input, button').forEach(input => {
+                        const name = input.getAttribute('name');
+                        if (name) {
+                            // Replace pattern like "feeds.custom_feeds.0.name" with "feeds.custom_feeds.1.name"
+                            input.setAttribute('name', name.replace(/\.\d+\./, `.${index}.`));
+                        }
+                        const id = input.id;
+                        if (id) {
+                            // Keep IDs aligned after reindex (supports both _logo_<n> and _logo_preview_<n>)
+                            input.id = id
+                                .replace(/_logo_preview_\d+$/, `_logo_preview_${index}`)
+                                .replace(/_logo_\d+$/, `_logo_${index}`);
+                        }
+                        // Keep dataset index aligned so event handlers remain correct after reindex
+                        if (input.dataset && 'index' in input.dataset) {
+                            input.dataset.index = String(index);
+                        }
+                    });
+                });
+            }
+        }
+        
+        function handleCustomFeedLogoUpload(event, fieldId, index, pluginId, fullKey) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('plugin_id', pluginId);
+            
+            fetch('/api/v3/plugins/assets/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Check HTTP status before parsing JSON
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Upload failed: ${response.status} ${response.statusText}${text ? ': ' + text : ''}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success' && data.data && data.data.files && data.data.files.length > 0) {
+                    const uploadedFile = data.data.files[0];
+                    const row = document.querySelector(`#${fieldId}_tbody tr[data-index="${index}"]`);
+                    if (row) {
+                        const logoCell = row.querySelector('td:nth-child(3)');
+                        const existingPathInput = logoCell.querySelector('input[name*=".logo.path"]');
+                        const existingIdInput = logoCell.querySelector('input[name*=".logo.id"]');
+                        const pathName = existingPathInput ? existingPathInput.name : `${fullKey}.${index}.logo.path`;
+                        const idName = existingIdInput ? existingIdInput.name : `${fullKey}.${index}.logo.id`;
+                        
+                        // Normalize path: remove leading slashes, then add single leading slash
+                        const normalizedPath = String(uploadedFile.path || '').replace(/^\/+/, '');
+                        const imageSrc = '/' + normalizedPath;
+                        
+                        // Clear logoCell and build DOM safely to prevent XSS
+                        logoCell.textContent = ''; // Clear existing content
+                        
+                        // Create container div
+                        const container = document.createElement('div');
+                        container.className = 'flex items-center space-x-2';
+                        
+                        // Create file input
+                        const fileInput = document.createElement('input');
+                        fileInput.type = 'file';
+                        fileInput.id = `${fieldId}_logo_${index}`;
+                        fileInput.accept = 'image/png,image/jpeg,image/bmp,image/gif';
+                        fileInput.style.display = 'none';
+                        fileInput.dataset.index = String(index);
+                        // Use addEventListener with dataset index to allow reindexing
+                        fileInput.addEventListener('change', function(e) {
+                            const idx = parseInt(e.target.dataset.index || '0', 10);
+                            handleCustomFeedLogoUpload(e, fieldId, idx, pluginId, fullKey);
+                        });
+                        
+                        // Create upload button
+                        const uploadButton = document.createElement('button');
+                        uploadButton.type = 'button';
+                        uploadButton.className = 'px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded';
+                        // Use fileInput directly instead of getElementById for reindexing compatibility
+                        uploadButton.addEventListener('click', function() {
+                            fileInput.click();
+                        });
+                        const uploadIcon = document.createElement('i');
+                        uploadIcon.className = 'fas fa-upload mr-1';
+                        uploadButton.appendChild(uploadIcon);
+                        uploadButton.appendChild(document.createTextNode(' Upload'));
+                        
+                        // Create img element - use normalized path, set src via property to prevent XSS
+                        const img = document.createElement('img');
+                        img.src = imageSrc; // Use property assignment with normalized path
+                        img.alt = 'Logo';
+                        img.className = 'w-8 h-8 object-cover rounded border';
+                        img.id = `${fieldId}_logo_preview_${index}`;
+                        
+                        // Create hidden input for path - set value via property to prevent XSS
+                        const pathInput = document.createElement('input');
+                        pathInput.type = 'hidden';
+                        pathInput.name = pathName;
+                        pathInput.value = imageSrc;
+                        
+                        // Create hidden input for id - set value via property to prevent XSS
+                        const idInput = document.createElement('input');
+                        idInput.type = 'hidden';
+                        idInput.name = idName;
+                        idInput.value = String(uploadedFile.id); // Ensure it's a string
+                        
+                        // Append all elements to container
+                        container.appendChild(fileInput);
+                        container.appendChild(uploadButton);
+                        container.appendChild(img);
+                        container.appendChild(pathInput);
+                        container.appendChild(idInput);
+                        
+                        // Append container to logoCell
+                        logoCell.appendChild(container);
+                    }
+                    // Allow re-uploading the same file (change event won't fire otherwise)
+                    event.target.value = '';
+                } else {
+                    alert('Upload failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                alert('Upload failed: ' + error.message);
+            });
+        }
+    </script>
+    
+    <!-- On-Demand Modal (moved here from plugins.html so it's always available) -->
+    <div id="on-demand-modal" class="fixed inset-0 modal-backdrop flex items-center justify-center z-50" style="display: none;">
+        <div class="modal-content p-6 w-full max-w-md bg-white rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="on-demand-modal-title" class="text-lg font-semibold">Run Plugin On-Demand</h3>
+                <button id="close-on-demand-modal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <!-- Service Status Alert -->
+            <div id="on-demand-service-warning" class="hidden mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div class="flex items-start">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5 mr-2"></i>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-yellow-800">Display service is not running</p>
+                        <p class="text-xs text-yellow-700 mt-1">
+                            The on-demand request will be queued but won't display until the service starts.
+                            Enable "Start display service" below to automatically start it.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="on-demand-form" class="space-y-4">
+                <div>
+                    <label for="on-demand-mode" class="block text-sm font-medium text-gray-700 mb-1">Display Mode</label>
+                    <select id="on-demand-mode" name="mode"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </select>
+                    <p id="on-demand-mode-hint" class="text-xs text-gray-500 mt-1"></p>
+                </div>
+                <div>
+                    <label for="on-demand-duration" class="block text-sm font-medium text-gray-700 mb-1">
+                        Duration (seconds, optional)
+                    </label>
+                    <input type="number" min="0" id="on-demand-duration" name="duration"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Leave blank to use plugin default">
+                    <p class="text-xs text-gray-500 mt-1">
+                        Use 0 or leave empty to keep the plugin running until stopped manually.
+                    </p>
+                </div>
+                <div class="flex items-center">
+                    <input id="on-demand-pinned" name="pinned" type="checkbox"
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="on-demand-pinned" class="ml-2 block text-sm text-gray-700">
+                        Pin plugin to prevent rotation until stopped
+                    </label>
+                </div>
+                <div class="flex items-center">
+                    <input id="on-demand-start-service" name="start_service" type="checkbox" checked
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="on-demand-start-service" class="ml-2 block text-sm text-gray-700">
+                        Start display service if it is not running
+                    </label>
+                </div>
+                <div class="flex justify-end gap-3 pt-3">
+                    <button type="button" id="cancel-on-demand"
+                            class="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold">
+                        Start On-Demand
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Close mobile offcanvas nav helper -->
+    <script>
+    window.closeMobileNav = function() {
+        var offcanvasEl = document.getElementById('sidebarOffcanvas');
+        if (offcanvasEl && window.bootstrap) {
+            var instance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+            if (instance) instance.hide();
+        }
+    };
+    </script>
+
+    <!-- Bootstrap 5.3 JS Bundle + jQuery (CDN with AP mode fallback) -->
+    <script>
+    (function() {
+        var isAPMode = window.location.hostname === '192.168.4.1' ||
+                       window.location.hostname.startsWith('192.168.4.');
+        var jq = document.createElement('script');
+        jq.src = isAPMode
+            ? '/static/v3/vendor/jquery.slim.min.js'
+            : 'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js';
+        document.body.appendChild(jq);
+        var bs = document.createElement('script');
+        bs.src = isAPMode
+            ? '/static/v3/vendor/bootstrap.bundle.min.js'
+            : 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js';
+        document.body.appendChild(bs);
+    })();
+    </script>

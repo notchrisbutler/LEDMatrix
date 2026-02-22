@@ -10,16 +10,16 @@
     {% set label = prop.title if prop.title else key|replace('_', ' ')|title %}
     {% set description = prop.description if prop.description else '' %}
     {% set field_type = prop.type if prop.type is string else (prop.type[0] if prop.type is iterable else 'string') %}
-    
+
     {# Handle nested objects - check for widget first #}
     {% if field_type == 'object' %}
         {% set obj_widget = prop.get('x-widget') or prop.get('x_widget') %}
         {% if obj_widget == 'schedule-picker' %}
             {# Schedule picker widget - renders enable/mode/times UI #}
             {% set obj_value = value if value is not none else {} %}
-            <div class="form-group mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
-                {% if description %}<p class="text-sm text-gray-500 mb-2">{{ description }}</p>{% endif %}
+            <div class="mb-3">
+                <label class="form-label fw-medium">{{ label }}</label>
+                {% if description %}<div class="form-text mb-2">{{ description }}</div>{% endif %}
                 <div id="{{ field_id }}_container" class="schedule-picker-container mt-1"></div>
                 <input type="hidden" id="{{ field_id }}_data" name="{{ full_key }}" value='{{ (obj_value|tojson|safe)|replace("'", "&#39;") }}'>
             </div>
@@ -45,9 +45,9 @@
         {% elif obj_widget == 'time-range' %}
             {# Time range widget - renders start/end time inputs #}
             {% set obj_value = value if value is not none else {} %}
-            <div class="form-group mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
-                {% if description %}<p class="text-sm text-gray-500 mb-2">{{ description }}</p>{% endif %}
+            <div class="mb-3">
+                <label class="form-label fw-medium">{{ label }}</label>
+                {% if description %}<div class="form-text mb-2">{{ description }}</div>{% endif %}
                 <div id="{{ field_id }}_container" class="time-range-container mt-1"></div>
                 <input type="hidden" id="{{ field_id }}_data" name="{{ full_key }}" value='{{ (obj_value|tojson|safe)|replace("'", "&#39;") }}'>
             </div>
@@ -74,15 +74,15 @@
             {{ render_nested_section(key, prop, value, prefix, plugin_id) }}
         {% endif %}
     {% else %}
-        <div class="form-group mb-4">
-            <label for="{{ field_id }}" class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="mb-3">
+            <label for="{{ field_id }}" class="form-label fw-medium">
                 {{ label }}
             </label>
-            
+
             {% if description %}
-            <p class="text-sm text-gray-500 mb-2">{{ description }}</p>
+            <div class="form-text mb-2">{{ description }}</div>
             {% endif %}
-            
+
             {# Boolean - check for widget first #}
             {% if field_type == 'boolean' %}
             {% set bool_widget = prop.get('x-widget') or prop.get('x_widget') %}
@@ -113,29 +113,29 @@
                 </script>
             {% else %}
             {# Default checkbox - value="true" ensures checked sends "true" not "on" #}
-            <label class="flex items-center cursor-pointer">
+            <div class="form-check form-switch">
                 <input type="checkbox"
                        id="{{ field_id }}"
                        name="{{ full_key }}"
                        value="true"
                        {% if value %}checked{% endif %}
-                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                <span class="ml-2 text-sm text-gray-600">Enabled</span>
-            </label>
+                       class="form-check-input">
+                <label class="form-check-label" for="{{ field_id }}">Enabled</label>
+            </div>
             {% endif %}
-            
+
             {# Enum dropdown #}
             {% elif prop.enum %}
             <select id="{{ field_id }}"
-                    name="{{ full_key }}" 
-                    class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white text-black">
+                    name="{{ full_key }}"
+                    class="form-select">
                 {% for option in prop.enum %}
                 <option value="{{ option }}" {% if value == option %}selected{% endif %}>
                     {{ option|replace('_', ' ')|title }}
                 </option>
                 {% endfor %}
             </select>
-            
+
             {# Number input - check for widget first #}
             {% elif field_type in ['number', 'integer'] %}
             {% set num_widget = prop.get('x-widget') or prop.get('x_widget') %}
@@ -175,9 +175,9 @@
                    {% if prop.minimum is defined %}min="{{ prop.minimum }}"{% endif %}
                    {% if prop.maximum is defined %}max="{{ prop.maximum }}"{% endif %}
                    {% if field_type == 'integer' %}step="1"{% else %}step="any"{% endif %}
-                   class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white text-black placeholder:text-gray-500">
+                   class="form-control">
             {% endif %}
-            
+
             {# Array - check for file upload widget first (to avoid breaking static-image plugin), then checkbox-group, then array of objects #}
             {% elif field_type == 'array' %}
             {% set x_widget = prop.get('x-widget') or prop.get('x_widget') %}
@@ -189,86 +189,88 @@
                 {% set max_size_mb = upload_config.get('max_size_mb', 5) %}
                 {% set plugin_id_from_config = upload_config.get('plugin_id', plugin_id) %}
                 {% set array_value = value if value is not none and value is iterable and value is not string else (prop.default if prop.default is defined and prop.default is iterable and prop.default is not string else []) %}
-                
+
                 <div id="{{ field_id }}_upload_widget" class="mt-1">
                     <!-- File Upload Drop Zone -->
-                    <div id="{{ field_id }}_drop_zone" 
-                         class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer"
-                         ondrop="window.handleFileDrop(event, this.dataset.fieldId)" 
-                         ondragover="event.preventDefault()" 
+                    <div id="{{ field_id }}_drop_zone"
+                         class="border border-2 border-dashed rounded-3 p-4 text-center cursor-pointer"
+                         ondrop="window.handleFileDrop(event, this.dataset.fieldId)"
+                         ondragover="event.preventDefault()"
                          data-field-id="{{ field_id }}"
                          onclick="document.getElementById('{{ field_id }}_file_input').click()">
-                        <input type="file" 
-                               id="{{ field_id }}_file_input" 
-                               multiple 
+                        <input type="file"
+                               id="{{ field_id }}_file_input"
+                               multiple
                                accept="{{ allowed_types|join(',') }}"
                                style="display: none;"
                                data-field-id="{{ field_id }}"
                                onchange="window.handleFileSelect(event, this.dataset.fieldId)">
-                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                        <p class="text-sm text-gray-600">Drag and drop images here or click to browse</p>
-                        <p class="text-xs text-gray-500 mt-1">Max {{ max_files }} files, {{ max_size_mb }}MB each (PNG, JPG, GIF, BMP)</p>
+                        <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-2"></i>
+                        <p class="small text-muted mb-1">Drag and drop images here or click to browse</p>
+                        <p class="small text-muted mb-0">Max {{ max_files }} files, {{ max_size_mb }}MB each (PNG, JPG, GIF, BMP)</p>
                     </div>
-                    <p class="text-xs text-amber-600 mt-2 flex items-center">
-                        <i class="fas fa-info-circle mr-1"></i>
+                    <div class="form-text text-warning mt-2 d-flex align-items-center">
+                        <i class="fas fa-info-circle me-1"></i>
                         Remember to save configuration after upload
-                    </p>
-                    
+                    </div>
+
                     <!-- Uploaded Images List -->
-                    <div id="{{ field_id }}_image_list" class="mt-4 space-y-2">
+                    <div id="{{ field_id }}_image_list" class="mt-3">
                         {% for img in array_value %}
                         {% set img_id = img.get('id', loop.index0) %}
                         {% set img_schedule = img.get('schedule', {}) %}
                         {% set has_schedule = img_schedule.get('enabled', false) and img_schedule.get('mode') and img_schedule.get('mode') != 'always' %}
-                        <div id="img_{{ img_id|string|replace('.', '_')|replace('-', '_') }}" class="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center space-x-3 flex-1">
-                                    <img src="/{{ img.get('path', '') }}" 
-                                         alt="{{ img.get('filename', '') }}" 
-                                         class="w-16 h-16 object-cover rounded"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div style="display:none;" class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                                        <i class="fas fa-image text-gray-400"></i>
+                        <div id="img_{{ img_id|string|replace('.', '_')|replace('-', '_') }}" class="card bg-light mb-2">
+                            <div class="card-body p-2">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                        <img src="/{{ img.get('path', '') }}"
+                                             alt="{{ img.get('filename', '') }}"
+                                             class="rounded" style="width: 4rem; height: 4rem; object-fit: cover;"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div style="display:none; width: 4rem; height: 4rem;" class="bg-secondary bg-opacity-25 rounded d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                        <div class="flex-grow-1 text-truncate">
+                                            <p class="small fw-medium mb-0 text-truncate">{{ img.get('original_filename') or img.get('filename', 'Image') }}</p>
+                                            <p class="small text-muted mb-0">
+                                                {% if img.get('size') %}{{ (img.get('size') / 1024)|round }} KB{% endif %}
+                                                {% if img.get('uploaded_at') %} &bull; {{ img.get('uploaded_at') }}{% endif %}
+                                            </p>
+                                            {% if has_schedule %}
+                                            <p class="small text-primary mt-1 mb-0">
+                                                <i class="fas fa-clock me-1"></i>Scheduled
+                                            </p>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">{{ img.get('original_filename') or img.get('filename', 'Image') }}</p>
-                                        <p class="text-xs text-gray-500">
-                                            {% if img.get('size') %}{{ (img.get('size') / 1024)|round }} KB{% endif %}
-                                            {% if img.get('uploaded_at') %} • {{ img.get('uploaded_at') }}{% endif %}
-                                        </p>
-                                        {% if has_schedule %}
-                                        <p class="text-xs text-blue-600 mt-1">
-                                            <i class="fas fa-clock mr-1"></i>Scheduled
-                                        </p>
-                                        {% endif %}
+                                    <div class="d-flex align-items-center gap-1 ms-3">
+                                        <button type="button"
+                                                data-field-id="{{ field_id }}"
+                                                data-image-id="{{ img_id }}"
+                                                data-image-idx="{{ loop.index0 }}"
+                                                onclick="window.openImageSchedule(this.dataset.fieldId, this.dataset.imageId || null, parseInt(this.dataset.imageIdx))"
+                                                class="btn btn-sm btn-link text-primary p-1"
+                                                title="Schedule this image">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </button>
+                                        <button type="button"
+                                                data-field-id="{{ field_id }}"
+                                                data-image-id="{{ img_id }}"
+                                                data-plugin-id="{{ plugin_id_from_config }}"
+                                                onclick="window.deleteUploadedImage(this.dataset.fieldId, this.dataset.imageId, this.dataset.pluginId)"
+                                                class="btn btn-sm btn-link text-danger p-1"
+                                                title="Delete image">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2 ml-4">
-                                    <button type="button" 
-                                            data-field-id="{{ field_id }}"
-                                            data-image-id="{{ img_id }}"
-                                            data-image-idx="{{ loop.index0 }}"
-                                            onclick="window.openImageSchedule(this.dataset.fieldId, this.dataset.imageId || null, parseInt(this.dataset.imageIdx))"
-                                            class="text-blue-600 hover:text-blue-800 p-2" 
-                                            title="Schedule this image">
-                                        <i class="fas fa-calendar-alt"></i>
-                                    </button>
-                                    <button type="button" 
-                                            data-field-id="{{ field_id }}"
-                                            data-image-id="{{ img_id }}"
-                                            data-plugin-id="{{ plugin_id_from_config }}"
-                                            onclick="window.deleteUploadedImage(this.dataset.fieldId, this.dataset.imageId, this.dataset.pluginId)"
-                                            class="text-red-600 hover:text-red-800 p-2"
-                                            title="Delete image">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
+                                <div id="schedule_{{ img_id|string|replace('.', '_')|replace('-', '_') }}" class="d-none mt-2 pt-2 border-top"></div>
                             </div>
-                            <div id="schedule_{{ img_id|string|replace('.', '_')|replace('-', '_') }}" class="hidden mt-3 pt-3 border-t border-gray-300"></div>
                         </div>
                         {% endfor %}
                     </div>
-                    
+
                     <!-- Hidden input to store image data -->
                     <input type="hidden" id="{{ field_id }}_images_data" name="{{ full_key }}" value='{{ (array_value|tojson|safe)|replace("'", "&#39;") }}'>
                 </div>
@@ -279,14 +281,14 @@
                 {% set enum_items = items_schema.get('enum') or [] %}
                 {% set x_options = prop.get('x-options') or {} %}
                 {% set labels = x_options.get('labels') or {} %}
-                
-                <div class="mt-1 space-y-2">
+
+                <div class="mt-1">
                     {% for option in enum_items %}
                     {% set is_checked = option in array_value %}
                     {% set option_label = labels.get(option, option|replace('_', ' ')|title) %}
                     {% set checkbox_id = (field_id ~ '_' ~ option)|replace('.', '_')|replace(' ', '_') %}
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" 
+                    <div class="form-check mb-2">
+                        <input type="checkbox"
                                id="{{ checkbox_id }}"
                                name="{{ full_key }}[]"
                                data-checkbox-group="{{ field_id }}"
@@ -294,9 +296,9 @@
                                value="{{ option }}"
                                {% if is_checked %}checked{% endif %}
                                onchange="updateCheckboxGroupData('{{ field_id }}')"
-                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <span class="ml-2 text-sm text-gray-700">{{ option_label }}</span>
-                    </label>
+                               class="form-check-input">
+                        <label class="form-check-label" for="{{ checkbox_id }}">{{ option_label }}</label>
+                    </div>
                     {% endfor %}
                 </div>
                 {# Hidden input to store selected values as JSON array (like array-of-objects pattern) #}
@@ -336,80 +338,83 @@
                     {% set item_properties = items_schema.get('properties', {}) %}
                     {% if not (item_properties.get('name') and item_properties.get('url')) %}
                         {# Fallback to generic if schema doesn't match expected structure #}
-                        <p class="text-xs text-amber-600 mt-1">
-                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <div class="form-text text-warning mt-1">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
                             Custom feeds widget requires 'name' and 'url' properties in items schema.
-                        </p>
+                        </div>
                     {% else %}
                         {% set max_items = prop.get('maxItems', 50) %}
                         {% set array_value = value if value is not none and value is iterable and value is not string else (prop.default if prop.default is defined and prop.default is iterable and prop.default is not string else []) %}
-                        
+
                         <div class="custom-feeds-table-container mt-1">
-                            <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
-                                <thead class="bg-gray-50">
+                            <div class="table-responsive">
+                            <table class="table table-bordered table-sm align-middle mb-2">
+                                <thead class="table-light">
                                     <tr>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
-                                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Enabled</th>
-                                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th class="small text-uppercase text-muted">Name</th>
+                                        <th class="small text-uppercase text-muted">URL</th>
+                                        <th class="small text-uppercase text-muted">Logo</th>
+                                        <th class="small text-uppercase text-muted text-center">Enabled</th>
+                                        <th class="small text-uppercase text-muted text-center">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="{{ field_id }}_tbody" class="bg-white divide-y divide-gray-200">
+                                <tbody id="{{ field_id }}_tbody">
                                     {% for item in array_value %}
                                     {% set item_index = loop.index0 %}
                                     <tr class="custom-feed-row" data-index="{{ item_index }}">
-                                        <td class="px-4 py-3 whitespace-nowrap">
-                                            <input type="text" 
+                                        <td>
+                                            <input type="text"
                                                    name="{{ full_key }}.{{ item_index }}.name"
                                                    value="{{ item.get('name', '') }}"
-                                                   class="block w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                   class="form-control form-control-sm"
                                                    placeholder="Feed Name"
                                                    required>
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap">
-                                            <input type="url" 
+                                        <td>
+                                            <input type="url"
                                                    name="{{ full_key }}.{{ item_index }}.url"
                                                    value="{{ item.get('url', '') }}"
-                                                   class="block w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                   class="form-control form-control-sm"
                                                    placeholder="https://example.com/feed"
                                                    required>
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap">
+                                        <td>
                                             {% set logo_value = item.get('logo') or {} %}
                                             {% set logo_path = logo_value.get('path', '') %}
-                                            <div class="flex items-center space-x-2">
-                                                <input type="file" 
+                                            <div class="d-flex align-items-center gap-2">
+                                                <input type="file"
                                                        id="{{ field_id }}_logo_{{ item_index }}"
                                                        accept="image/png,image/jpeg,image/bmp,image/gif"
                                                        style="display: none;"
                                                        onchange="handleCustomFeedLogoUpload(event, '{{ field_id }}', {{ item_index }}, '{{ plugin_id }}', '{{ full_key }}')">
-                                                <button type="button" 
+                                                <button type="button"
                                                         onclick="document.getElementById('{{ field_id }}_logo_{{ item_index }}').click()"
-                                                        class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">
-                                                    <i class="fas fa-upload mr-1"></i> Upload
+                                                        class="btn btn-sm btn-light">
+                                                    <i class="fas fa-upload me-1"></i> Upload
                                                 </button>
                                                 {% if logo_path %}
-                                                <img src="/{{ logo_path }}" alt="Logo" class="w-8 h-8 object-cover rounded border" id="{{ field_id }}_logo_preview_{{ item_index }}">
+                                                <img src="/{{ logo_path }}" alt="Logo" class="rounded border" style="width: 2rem; height: 2rem; object-fit: cover;" id="{{ field_id }}_logo_preview_{{ item_index }}">
                                                 <input type="hidden" name="{{ full_key }}.{{ item_index }}.logo.path" value="{{ logo_path }}">
                                                 <input type="hidden" name="{{ full_key }}.{{ item_index }}.logo.id" value="{{ logo_value.get('id', '') }}">
                                                 {% else %}
-                                                <span class="text-xs text-gray-400">No logo</span>
+                                                <span class="small text-muted">No logo</span>
                                                 {% endif %}
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-center">
+                                        <td class="text-center">
                                             <input type="hidden" name="{{ full_key }}.{{ item_index }}.enabled" value="false">
-                                            <input type="checkbox" 
-                                                   name="{{ full_key }}.{{ item_index }}.enabled"
-                                                   {% if item.get('enabled', true) %}checked{% endif %}
-                                                   value="true"
-                                                   class="h-4 w-4 text-blue-600">
+                                            <div class="form-check form-switch d-flex justify-content-center">
+                                                <input type="checkbox"
+                                                       name="{{ full_key }}.{{ item_index }}.enabled"
+                                                       {% if item.get('enabled', true) %}checked{% endif %}
+                                                       value="true"
+                                                       class="form-check-input">
+                                            </div>
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-center">
-                                            <button type="button" 
+                                        <td class="text-center">
+                                            <button type="button"
                                                     onclick="removeCustomFeedRow(this)"
-                                                    class="text-red-600 hover:text-red-800 px-2 py-1">
+                                                    class="btn btn-sm btn-link text-danger p-1">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
@@ -417,11 +422,12 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <button type="button" 
+                            </div>
+                            <button type="button"
                                     onclick="addCustomFeedRow('{{ field_id }}', '{{ full_key }}', {{ max_items }}, '{{ plugin_id }}')"
-                                    class="mt-3 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                                    class="btn btn-primary btn-sm"
                                     {% if array_value|length >= max_items %}disabled style="opacity: 0.5;"{% endif %}>
-                                <i class="fas fa-plus mr-1"></i> Add Feed
+                                <i class="fas fa-plus me-1"></i> Add Feed
                             </button>
                         </div>
                     {% endif %}
@@ -446,18 +452,19 @@
                     {% endif %}
 
                     <div class="array-table-container mt-1" data-field-id="{{ field_id }}" data-full-key="{{ full_key }}" data-max-items="{{ max_items }}" data-plugin-id="{{ plugin_id }}">
-                        <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
-                            <thead class="bg-gray-50">
+                        <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle mb-2">
+                            <thead class="table-light">
                                 <tr>
                                     {% for col_name in display_columns %}
                                         {% set col_def = item_properties.get(col_name, {}) %}
                                         {% set col_title = col_def.get('title', col_name|replace('_', ' ')|title) %}
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ col_title }}</th>
+                                        <th class="small text-uppercase text-muted">{{ col_title }}</th>
                                     {% endfor %}
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Actions</th>
+                                    <th class="small text-uppercase text-muted text-center" style="width: 5rem;">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="{{ field_id }}_tbody" class="bg-white divide-y divide-gray-200">
+                            <tbody id="{{ field_id }}_tbody">
                                 {% for item in array_value %}
                                 {% set item_index = loop.index0 %}
                                 <tr class="array-table-row" data-index="{{ item_index }}">
@@ -465,14 +472,16 @@
                                         {% set col_def = item_properties.get(col_name, {}) %}
                                         {% set col_type = col_def.get('type', 'string') %}
                                         {% set col_value = item.get(col_name, col_def.get('default', '')) %}
-                                        <td class="px-4 py-3 whitespace-nowrap">
+                                        <td>
                                             {% if col_type == 'boolean' %}
                                                 <input type="hidden" name="{{ full_key }}.{{ item_index }}.{{ col_name }}" value="false">
-                                                <input type="checkbox"
-                                                       name="{{ full_key }}.{{ item_index }}.{{ col_name }}"
-                                                       {% if col_value %}checked{% endif %}
-                                                       value="true"
-                                                       class="h-4 w-4 text-blue-600">
+                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                    <input type="checkbox"
+                                                           name="{{ full_key }}.{{ item_index }}.{{ col_name }}"
+                                                           {% if col_value %}checked{% endif %}
+                                                           value="true"
+                                                           class="form-check-input">
+                                                </div>
                                             {% elif col_type == 'integer' or col_type == 'number' %}
                                                 <input type="number"
                                                        name="{{ full_key }}.{{ item_index }}.{{ col_name }}"
@@ -480,13 +489,13 @@
                                                        {% if col_def.get('minimum') is not none %}min="{{ col_def.get('minimum') }}"{% endif %}
                                                        {% if col_def.get('maximum') is not none %}max="{{ col_def.get('maximum') }}"{% endif %}
                                                        {% if col_type == 'integer' %}step="1"{% else %}step="any"{% endif %}
-                                                       class="block w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center"
+                                                       class="form-control form-control-sm text-center" style="width: 5rem;"
                                                        {% if col_def.get('description') %}title="{{ col_def.get('description') }}"{% endif %}>
                                             {% else %}
                                                 <input type="text"
                                                        name="{{ full_key }}.{{ item_index }}.{{ col_name }}"
                                                        value="{{ col_value if col_value is not none else '' }}"
-                                                       class="block w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                       class="form-control form-control-sm"
                                                        {% if col_def.get('description') %}placeholder="{{ col_def.get('description') }}"{% endif %}
                                                        {% if col_def.get('pattern') %}pattern="{{ col_def.get('pattern') }}"{% endif %}
                                                        {% if col_def.get('minLength') %}minlength="{{ col_def.get('minLength') }}"{% endif %}
@@ -494,10 +503,10 @@
                                             {% endif %}
                                         </td>
                                     {% endfor %}
-                                    <td class="px-4 py-3 whitespace-nowrap text-center">
+                                    <td class="text-center">
                                         <button type="button"
                                                 onclick="removeArrayTableRow(this)"
-                                                class="text-red-600 hover:text-red-800 px-2 py-1">
+                                                class="btn btn-sm btn-link text-danger p-1">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -505,6 +514,7 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        </div>
                         <button type="button"
                                 onclick="addArrayTableRow(this)"
                                 data-field-id="{{ field_id }}"
@@ -513,9 +523,9 @@
                                 data-plugin-id="{{ plugin_id }}"
                                 data-item-properties="{{ item_properties|tojson|e }}"
                                 data-display-columns="{{ display_columns|tojson|e }}"
-                                class="mt-3 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                                class="btn btn-primary btn-sm"
                                 {% if array_value|length >= max_items %}disabled style="opacity: 0.5;"{% endif %}>
-                            <i class="fas fa-plus mr-1"></i> Add Item
+                            <i class="fas fa-plus me-1"></i> Add Item
                         </button>
                     </div>
                 {% else %}
@@ -528,11 +538,11 @@
                            name="{{ full_key }}"
                            value="{{ array_value|join(', ') if array_value is iterable and array_value is not string else '' }}"
                            placeholder="Enter values separated by commas"
-                           class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white text-black placeholder:text-gray-500">
-                    <p class="text-xs text-gray-400 mt-1">Separate multiple values with commas</p>
+                           class="form-control">
+                    <div class="form-text">Separate multiple values with commas</div>
                 {% endif %}
             {% endif %}
-            
+
             {# String/default field - check for widgets #}
             {% else %}
             {% set str_widget = prop.get('x-widget') or prop.get('x_widget') %}
@@ -571,7 +581,7 @@
                        id="{{ field_id }}"
                        name="{{ full_key }}"
                        value="{{ str_value }}"
-                       class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white text-black placeholder:text-gray-500">
+                       class="form-control">
             {% endif %}
             {% endif %}
         </div>
@@ -585,20 +595,22 @@
     {% set label = prop.title if prop.title else key|replace('_', ' ')|title %}
     {% set description = prop.description if prop.description else '' %}
     {% set nested_value = value if value else {} %}
-    
-    <div class="nested-section border border-gray-300 rounded-lg mb-4">
-        <button type="button" 
-                class="w-full bg-gray-100 hover:bg-gray-200 px-4 py-3 flex items-center justify-between text-left transition-colors rounded-t-lg"
-                onclick="toggleSection('{{ section_id }}')">
-            <div class="flex-1">
-                <h4 class="font-semibold text-gray-900">{{ label }}</h4>
-                {% if description %}
-                <p class="text-sm text-gray-600 mt-1">{{ description }}</p>
-                {% endif %}
-            </div>
-            <i id="{{ section_id }}-icon" class="fas fa-chevron-right text-gray-500 transition-transform"></i>
-        </button>
-        <div id="{{ section_id }}" class="nested-content bg-gray-50 px-4 py-4 space-y-3 hidden" style="display: none;">
+
+    <div class="card bg-light mb-3">
+        <div class="card-header p-0 border-0">
+            <button type="button"
+                    class="btn btn-light w-100 d-flex align-items-center justify-content-between text-start rounded-top"
+                    onclick="toggleSection('{{ section_id }}')">
+                <div class="flex-grow-1">
+                    <h6 class="fw-semibold mb-0">{{ label }}</h6>
+                    {% if description %}
+                    <div class="small text-muted mt-1">{{ description }}</div>
+                    {% endif %}
+                </div>
+                <i id="{{ section_id }}-icon" class="fas fa-chevron-right text-muted transition-transform"></i>
+            </button>
+        </div>
+        <div id="{{ section_id }}" class="card-body d-none" style="display: none;">
             {% set property_order = prop['x-propertyOrder'] if 'x-propertyOrder' in prop else prop.properties.keys()|list %}
             {% for nested_key in property_order %}
                 {% if nested_key in prop.properties %}
@@ -613,18 +625,18 @@
 
 {# ===== MAIN TEMPLATE ===== #}
 
-<div class="plugin-config-container" 
+<div class="plugin-config-container"
      data-plugin-id="{{ plugin.id }}"
      x-data="{ saving: false, saveError: null, saveSuccess: false }">
-    
-    <div class="border-b border-gray-200 pb-4 mb-6">
-        <div class="flex items-center justify-between">
+
+    <div class="border-bottom pb-3 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
             <div>
-                <h2 class="text-lg font-semibold text-gray-900">{{ plugin.name or plugin.id }}</h2>
-                <p class="mt-1 text-sm text-gray-600">{{ plugin.description or 'Plugin configuration' }}</p>
+                <h2 class="h5 fw-semibold mb-1">{{ plugin.name or plugin.id }}</h2>
+                <p class="text-muted small mb-0">{{ plugin.description or 'Plugin configuration' }}</p>
             </div>
-            <div class="flex items-center space-x-4">
-                <label class="flex items-center cursor-pointer">
+            <div class="d-flex align-items-center gap-3">
+                <div class="form-check form-switch">
                     <input type="checkbox"
                            id="plugin-enabled-{{ plugin.id }}"
                            name="enabled"
@@ -635,11 +647,11 @@
                            hx-swap="none"
                            hx-vals='js:{enabled: document.getElementById("plugin-enabled-{{ plugin.id }}").checked ? "true" : "false"}'
                            hx-on::after-request="handleToggleResponse(event, '{{ plugin.id }}')"
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <span class="ml-2 text-sm {% if plugin.enabled %}text-green-600{% else %}text-gray-500{% endif %}">
+                           class="form-check-input">
+                    <label class="form-check-label small {% if plugin.enabled %}text-success{% else %}text-muted{% endif %}" for="plugin-enabled-{{ plugin.id }}">
                         {% if plugin.enabled %}Enabled{% else %}Disabled{% endif %}
-                    </span>
-                </label>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -652,223 +664,213 @@
           hx-on::before-request="this.querySelector('[type=submit]').disabled = true"
           hx-on::after-request="handleConfigSave(event, '{{ plugin.id }}')"
           onsubmit="return validatePluginConfigForm(this, '{{ plugin.id }}');">
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="row g-3">
             {# Plugin Information Panel #}
-            <div class="bg-gray-50 rounded-lg p-4">
-                <h3 class="text-md font-medium text-gray-900 mb-3">Plugin Information</h3>
-                <dl class="space-y-2">
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Name</dt>
-                        <dd class="text-sm text-gray-900">{{ plugin.name or plugin.id }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Author</dt>
-                        <dd class="text-sm text-gray-900">{{ plugin.author or 'Unknown' }}</dd>
-                    </div>
-                    {% if plugin.version %}
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Version</dt>
-                        <dd class="text-sm text-gray-900">{{ plugin.version }}</dd>
-                    </div>
-                    {% endif %}
-                    {% if plugin.last_commit %}
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Commit</dt>
-                        <dd class="text-sm text-gray-900 font-mono">
-                            {{ plugin.last_commit[:7] if plugin.last_commit|length > 7 else plugin.last_commit }}
-                            {% if plugin.branch %}
-                            <span class="text-gray-500">({{ plugin.branch }})</span>
+            <div class="col-md-6">
+                <div class="card bg-light h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Plugin Information</h6>
+                        <dl class="mb-0">
+                            <div class="mb-2">
+                                <dt class="small fw-medium text-muted">Name</dt>
+                                <dd class="small mb-0">{{ plugin.name or plugin.id }}</dd>
+                            </div>
+                            <div class="mb-2">
+                                <dt class="small fw-medium text-muted">Author</dt>
+                                <dd class="small mb-0">{{ plugin.author or 'Unknown' }}</dd>
+                            </div>
+                            {% if plugin.version %}
+                            <div class="mb-2">
+                                <dt class="small fw-medium text-muted">Version</dt>
+                                <dd class="small mb-0">{{ plugin.version }}</dd>
+                            </div>
                             {% endif %}
-                        </dd>
+                            {% if plugin.last_commit %}
+                            <div class="mb-2">
+                                <dt class="small fw-medium text-muted">Commit</dt>
+                                <dd class="small mb-0 font-monospace">
+                                    {{ plugin.last_commit[:7] if plugin.last_commit|length > 7 else plugin.last_commit }}
+                                    {% if plugin.branch %}
+                                    <span class="text-muted">({{ plugin.branch }})</span>
+                                    {% endif %}
+                                </dd>
+                            </div>
+                            {% endif %}
+                            {% if plugin.category %}
+                            <div class="mb-2">
+                                <dt class="small fw-medium text-muted">Category</dt>
+                                <dd class="small mb-0">{{ plugin.category }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if plugin.tags %}
+                            <div class="mb-2">
+                                <dt class="small fw-medium text-muted">Tags</dt>
+                                <dd class="d-flex flex-wrap gap-1 mt-1 mb-0">
+                                    {% for tag in plugin.tags %}
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">{{ tag }}</span>
+                                    {% endfor %}
+                                </dd>
+                            </div>
+                            {% endif %}
+                        </dl>
+
+                        {# On-Demand Controls #}
+                        <div class="mt-3 pt-3 border-top">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="fas fa-bolt text-primary"></i>
+                                <span class="small fw-semibold">On-Demand Controls</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button"
+                                        onclick="runPluginOnDemand('{{ plugin.id }}')"
+                                        class="btn btn-success btn-sm d-flex align-items-center gap-1">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>Run On-Demand</span>
+                                </button>
+                                <button type="button"
+                                        onclick="stopOnDemand()"
+                                        class="btn btn-danger btn-sm d-flex align-items-center gap-1">
+                                    <i class="fas fa-stop"></i>
+                                    <span>Stop On-Demand</span>
+                                </button>
+                            </div>
+                            {% if not plugin.enabled %}
+                            <div class="form-text text-warning mt-2">Plugin is disabled, but on-demand will temporarily enable it.</div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% endif %}
-                    {% if plugin.category %}
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Category</dt>
-                        <dd class="text-sm text-gray-900">{{ plugin.category }}</dd>
-                    </div>
-                    {% endif %}
-                    {% if plugin.tags %}
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Tags</dt>
-                        <dd class="flex flex-wrap gap-1 mt-1">
-                            {% for tag in plugin.tags %}
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ tag }}</span>
-                            {% endfor %}
-                        </dd>
-                    </div>
-                    {% endif %}
-                </dl>
-                
-                {# On-Demand Controls #}
-                <div class="mt-4 pt-4 border-t border-gray-200 space-y-3">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-bolt text-blue-500"></i>
-                        <span class="text-sm font-semibold text-gray-900">On-Demand Controls</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <button type="button"
-                                onclick="runPluginOnDemand('{{ plugin.id }}')"
-                                class="px-3 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center gap-2 transition-colors">
-                            <i class="fas fa-play-circle"></i>
-                            <span>Run On-Demand</span>
-                        </button>
-                        <button type="button"
-                                onclick="stopOnDemand()"
-                                class="px-3 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md flex items-center gap-2 transition-colors">
-                            <i class="fas fa-stop"></i>
-                            <span>Stop On-Demand</span>
-                        </button>
-                    </div>
-                    {% if not plugin.enabled %}
-                    <p class="text-xs text-amber-600">Plugin is disabled, but on-demand will temporarily enable it.</p>
-                    {% endif %}
                 </div>
             </div>
-            
+
             {# Configuration Form Panel #}
-            <div class="bg-gray-50 rounded-lg p-4">
-                <h3 class="text-md font-medium text-gray-900 mb-3">Configuration</h3>
-                <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                    {% if schema and schema.properties %}
-                        {# Use property order if defined, otherwise use natural order #}
-                        {# Skip 'enabled' field - it's handled by the header toggle #}
-                        {% set property_order = schema['x-propertyOrder'] if 'x-propertyOrder' in schema else schema.properties.keys()|list %}
-                        {% for key in property_order %}
-                            {% if key in schema.properties and key != 'enabled' %}
-                                {% set prop = schema.properties[key] %}
-                                {% set value = config[key] if key in config else none %}
-                                {{ render_field(key, prop, value, '', plugin.id) }}
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        {# No schema - render simple form from config #}
-                        {% if config %}
-                            {% for key, value in config.items() %}
-                                {% if key not in ['enabled'] %}
-                                <div class="form-group mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        {{ key|replace('_', ' ')|title }}
-                                    </label>
-                                    {% if value is sameas true or value is sameas false %}
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="checkbox" name="{{ key }}" {% if value %}checked{% endif %}
-                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                        <span class="ml-2 text-sm text-gray-600">Enabled</span>
-                                    </label>
-                                    {% elif value is number %}
-                                    <input type="number" name="{{ key }}" value="{{ value }}"
-                                           class="form-input w-full rounded-md border-gray-300 bg-gray-900 text-white placeholder:text-gray-400">
-                                    {% else %}
-                                    <input type="text" name="{{ key }}" value="{{ value }}"
-                                           class="form-input w-full rounded-md border-gray-300 bg-gray-900 text-white placeholder:text-gray-400">
+            <div class="col-md-6">
+                <div class="card bg-light h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Configuration</h6>
+                        <div style="max-height: 24rem; overflow-y: auto;" class="pe-2">
+                            {% if schema and schema.properties %}
+                                {# Use property order if defined, otherwise use natural order #}
+                                {# Skip 'enabled' field - it's handled by the header toggle #}
+                                {% set property_order = schema['x-propertyOrder'] if 'x-propertyOrder' in schema else schema.properties.keys()|list %}
+                                {% for key in property_order %}
+                                    {% if key in schema.properties and key != 'enabled' %}
+                                        {% set prop = schema.properties[key] %}
+                                        {% set value = config[key] if key in config else none %}
+                                        {{ render_field(key, prop, value, '', plugin.id) }}
                                     {% endif %}
-                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {# No schema - render simple form from config #}
+                                {% if config %}
+                                    {% for key, value in config.items() %}
+                                        {% if key not in ['enabled'] %}
+                                        <div class="mb-3">
+                                            <label class="form-label fw-medium">
+                                                {{ key|replace('_', ' ')|title }}
+                                            </label>
+                                            {% if value is sameas true or value is sameas false %}
+                                            <div class="form-check form-switch">
+                                                <input type="checkbox" name="{{ key }}" {% if value %}checked{% endif %}
+                                                       class="form-check-input">
+                                                <label class="form-check-label">Enabled</label>
+                                            </div>
+                                            {% elif value is number %}
+                                            <input type="number" name="{{ key }}" value="{{ value }}"
+                                                   class="form-control">
+                                            {% else %}
+                                            <input type="text" name="{{ key }}" value="{{ value }}"
+                                                   class="form-control">
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted small">No configuration options available for this plugin.</p>
                                 {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <p class="text-gray-500 text-sm">No configuration options available for this plugin.</p>
-                        {% endif %}
-                    {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
+
         {# Web UI Actions (if any) #}
         {% if web_ui_actions %}
-        <div class="mt-6 pt-4 border-t border-gray-200">
-            <h3 class="text-md font-medium text-gray-900 mb-3">Plugin Actions</h3>
+        <div class="mt-4 pt-3 border-top">
+            <h6 class="fw-bold mb-3">Plugin Actions</h6>
             {% if web_ui_actions[0].section_description %}
-            <p class="text-sm text-gray-600 mb-4">{{ web_ui_actions[0].section_description }}</p>
+            <p class="small text-muted mb-3">{{ web_ui_actions[0].section_description }}</p>
             {% endif %}
-            <div class="space-y-3">
+            <div class="d-grid gap-2">
                 {% for action in web_ui_actions %}
                 {% set action_id = "action-" ~ action.id ~ "-" ~ loop.index0 %}
                 {% set status_id = "action-status-" ~ action.id ~ "-" ~ loop.index0 %}
                 {% set bg_color = action.color or 'blue' %}
                 {% if bg_color == 'green' %}
-                    {% set bg_class = 'bg-green-50' %}
-                    {% set border_class = 'border-green-200' %}
-                    {% set text_class = 'text-green-900' %}
-                    {% set text_light_class = 'text-green-700' %}
-                    {% set btn_class = 'bg-green-600 hover:bg-green-700' %}
+                    {% set alert_class = 'alert-success' %}
+                    {% set btn_class = 'btn-success' %}
                 {% elif bg_color == 'red' %}
-                    {% set bg_class = 'bg-red-50' %}
-                    {% set border_class = 'border-red-200' %}
-                    {% set text_class = 'text-red-900' %}
-                    {% set text_light_class = 'text-red-700' %}
-                    {% set btn_class = 'bg-red-600 hover:bg-red-700' %}
+                    {% set alert_class = 'alert-danger' %}
+                    {% set btn_class = 'btn-danger' %}
                 {% elif bg_color == 'yellow' %}
-                    {% set bg_class = 'bg-yellow-50' %}
-                    {% set border_class = 'border-yellow-200' %}
-                    {% set text_class = 'text-yellow-900' %}
-                    {% set text_light_class = 'text-yellow-700' %}
-                    {% set btn_class = 'bg-yellow-600 hover:bg-yellow-700' %}
+                    {% set alert_class = 'alert-warning' %}
+                    {% set btn_class = 'btn-warning' %}
                 {% elif bg_color == 'purple' %}
-                    {% set bg_class = 'bg-purple-50' %}
-                    {% set border_class = 'border-purple-200' %}
-                    {% set text_class = 'text-purple-900' %}
-                    {% set text_light_class = 'text-purple-700' %}
-                    {% set btn_class = 'bg-purple-600 hover:bg-purple-700' %}
+                    {% set alert_class = 'alert-info' %}
+                    {% set btn_class = 'btn-info' %}
                 {% else %}
-                    {% set bg_class = 'bg-blue-50' %}
-                    {% set border_class = 'border-blue-200' %}
-                    {% set text_class = 'text-blue-900' %}
-                    {% set text_light_class = 'text-blue-700' %}
-                    {% set btn_class = 'bg-blue-600 hover:bg-blue-700' %}
+                    {% set alert_class = 'alert-primary' %}
+                    {% set btn_class = 'btn-primary' %}
                 {% endif %}
-                <div class="{{ bg_class }} border {{ border_class }} rounded-lg p-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <h4 class="font-medium {{ text_class }} mb-1">
-                                {% if action.icon %}<i class="{{ action.icon }} mr-2"></i>{% endif %}{{ action.title or action.id }}
-                            </h4>
-                            <p class="text-sm {{ text_light_class }}">{{ action.description or '' }}</p>
-                        </div>
-                        <button type="button"
-                                id="{{ action_id }}"
-                                onclick="executePluginAction('{{ action.id }}', {{ loop.index0 }}, '{{ plugin.id }}')"
-                                data-plugin-id="{{ plugin.id }}"
-                                data-action-id="{{ action.id }}"
-                                class="btn {{ btn_class }} text-white px-4 py-2 rounded-md whitespace-nowrap">
-                            {% if action.icon %}<i class="{{ action.icon }} mr-2"></i>{% endif %}{{ action.button_text or action.title or action.id }}
-                        </button>
+                <div class="alert {{ alert_class }} d-flex align-items-center justify-content-between mb-2">
+                    <div class="flex-grow-1">
+                        <h6 class="alert-heading fw-medium mb-1">
+                            {% if action.icon %}<i class="{{ action.icon }} me-2"></i>{% endif %}{{ action.title or action.id }}
+                        </h6>
+                        <p class="small mb-0">{{ action.description or '' }}</p>
                     </div>
-                    <div id="{{ status_id }}" class="mt-3 hidden"></div>
+                    <button type="button"
+                            id="{{ action_id }}"
+                            onclick="executePluginAction('{{ action.id }}', {{ loop.index0 }}, '{{ plugin.id }}')"
+                            data-plugin-id="{{ plugin.id }}"
+                            data-action-id="{{ action.id }}"
+                            class="btn {{ btn_class }} btn-sm ms-3 text-nowrap">
+                        {% if action.icon %}<i class="{{ action.icon }} me-1"></i>{% endif %}{{ action.button_text or action.title or action.id }}
+                    </button>
                 </div>
+                <div id="{{ status_id }}" class="d-none mt-1"></div>
                 {% endfor %}
             </div>
         </div>
         {% endif %}
-        
+
         {# Action Buttons #}
-        <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
             <button type="button"
                     onclick="refreshPluginConfig('{{ plugin.id }}')"
-                    class="btn bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md">
-                <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    class="btn btn-secondary btn-sm">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
             </button>
             <button type="button"
                     hx-post="/api/v3/plugins/update?plugin_id={{ plugin.id }}"
                     hx-swap="none"
                     hx-on::after-request="handlePluginUpdate(event, '{{ plugin.id }}')"
-                    class="btn bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md">
-                <i class="fas fa-download mr-2"></i>Update
+                    class="btn btn-warning btn-sm">
+                <i class="fas fa-download me-1"></i>Update
             </button>
             <button type="button"
                     onclick="if(confirm('Are you sure you want to uninstall {{ plugin.name or plugin.id }}?')) uninstallPlugin('{{ plugin.id }}')"
-                    class="btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md">
-                <i class="fas fa-trash mr-2"></i>Uninstall
+                    class="btn btn-danger btn-sm">
+                <i class="fas fa-trash me-1"></i>Uninstall
             </button>
-            <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
-                <span id="save-indicator-{{ plugin.id }}" class="htmx-indicator mr-2">
+            <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center">
+                <span id="save-indicator-{{ plugin.id }}" class="htmx-indicator me-1">
                     <i class="fas fa-spinner fa-spin"></i>
                 </span>
-                <i class="fas fa-save mr-2 save-icon"></i>
+                <i class="fas fa-save me-1 save-icon"></i>
                 <span>Save Configuration</span>
             </button>
         </div>
     </form>
 </div>
-

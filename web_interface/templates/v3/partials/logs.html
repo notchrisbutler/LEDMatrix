@@ -1,92 +1,94 @@
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="border-b border-gray-200 pb-4 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900">System Logs</h2>
-        <p class="mt-1 text-sm text-gray-600">View real-time logs from the LED matrix service for troubleshooting.</p>
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="card-title mb-0"><i class="fas fa-file-alt me-2"></i>System Logs</h6>
+        <p class="text-muted small mb-0 d-none d-md-block">Real-time logs from the LED matrix service</p>
     </div>
+    <div class="card-body pb-2">
+        <!-- Controls -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <!-- Log Mode Toggle -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="form-check form-switch mb-0">
+                        <input type="checkbox" id="log-realtime-toggle" class="form-check-input" checked>
+                        <label class="form-check-label small fw-medium" for="log-realtime-toggle">Real-time</label>
+                    </div>
+                    <button id="refresh-logs-btn" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
 
-    <!-- Controls -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex items-center space-x-4">
-            <!-- Log Mode Toggle -->
-            <div class="flex items-center space-x-2">
-                <label class="flex items-center">
-                    <input type="checkbox" id="log-realtime-toggle" class="form-control h-4 w-4" checked>
-                    <span class="ml-2 text-sm font-medium">Real-time</span>
-                </label>
-                <span class="text-sm text-gray-600">|</span>
-                <button id="refresh-logs-btn" class="btn bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
-                    <i class="fas fa-sync-alt mr-1"></i>Refresh
+                <!-- Log Level Filter -->
+                <select id="log-level-filter" class="form-select form-select-sm" style="width: auto;">
+                    <option value="">All Levels</option>
+                    <option value="ERROR">Errors Only</option>
+                    <option value="WARNING">Warnings & Errors</option>
+                    <option value="INFO">Info & Above</option>
+                </select>
+
+                <!-- Search -->
+                <div class="position-relative">
+                    <input type="text" id="log-search" placeholder="Search logs..." class="form-control form-control-sm ps-4" style="width: 200px;">
+                    <i class="fas fa-search position-absolute top-50 translate-middle-y text-muted" style="left: 0.5rem; font-size: 0.75rem;"></i>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Auto-scroll toggle -->
+                <div class="form-check form-switch mb-0">
+                    <input type="checkbox" id="log-autoscroll" class="form-check-input" checked>
+                    <label class="form-check-label small" for="log-autoscroll">Auto-scroll</label>
+                </div>
+
+                <!-- Clear logs -->
+                <button id="clear-logs-btn" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-trash me-1"></i>Clear
+                </button>
+
+                <!-- Download logs -->
+                <button id="download-logs-btn" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-download me-1"></i>Download
                 </button>
             </div>
-
-            <!-- Log Level Filter -->
-            <select id="log-level-filter" class="form-control text-sm">
-                <option value="">All Levels</option>
-                <option value="ERROR">Errors Only</option>
-                <option value="WARNING">Warnings & Errors</option>
-                <option value="INFO">Info & Above</option>
-            </select>
-
-            <!-- Search -->
-            <div class="relative">
-                <input type="text" id="log-search" placeholder="Search logs..." class="form-control text-sm pl-8 pr-4 py-1 w-48">
-                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
-            </div>
-        </div>
-
-        <div class="flex items-center space-x-2">
-            <!-- Auto-scroll toggle -->
-            <label class="flex items-center">
-                <input type="checkbox" id="log-autoscroll" class="form-control h-4 w-4" checked>
-                <span class="ml-2 text-sm">Auto-scroll</span>
-            </label>
-
-            <!-- Clear logs -->
-            <button id="clear-logs-btn" class="btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
-                <i class="fas fa-trash mr-1"></i>Clear
-            </button>
-
-            <!-- Download logs -->
-            <button id="download-logs-btn" class="btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                <i class="fas fa-download mr-1"></i>Download
-            </button>
         </div>
     </div>
 
     <!-- Log Display -->
-    <div class="relative">
-        <div id="logs-container" class="bg-gray-900 text-gray-100 font-mono text-sm rounded-lg p-3 border border-gray-700 shadow-inner relative" style="height: 500px; min-height: 400px; max-height: 70vh;">
-            <div id="logs-loading" class="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-900">
+    <div class="card-body p-0 position-relative">
+        <div id="logs-container" class="log-viewer position-relative" style="height: 600px; min-height: 400px; max-height: 70vh;">
+            <div id="logs-loading" class="d-flex align-items-center justify-content-center text-secondary">
                 <div class="text-center">
-                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                    <i class="fas fa-spinner fa-spin fs-4 mb-2"></i>
                     <p>Loading logs...</p>
                 </div>
             </div>
-            <div id="logs-display" class="hidden absolute inset-0 overflow-y-auto bg-gray-900">
+            <div id="logs-display" class="d-none">
                 <div class="logs-content p-0">
                     <!-- Logs will be inserted here -->
                 </div>
             </div>
-            <div id="logs-empty" class="hidden absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-900">
+            <div id="logs-empty" class="d-none d-flex align-items-center justify-content-center text-secondary">
                 <div class="text-center">
-                    <i class="fas fa-file-alt text-4xl mb-2"></i>
+                    <i class="fas fa-file-alt fs-1 mb-2"></i>
                     <p>No logs available</p>
-                    <p class="text-sm mt-2">Logs will appear here when the service runs</p>
+                    <p class="small mt-2">Logs will appear here when the service runs</p>
                 </div>
             </div>
         </div>
 
         <!-- Log stats -->
-        <div id="log-stats" class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-3 py-1.5 rounded-md backdrop-blur-sm hidden">
-            <i class="fas fa-list-ul mr-1"></i>
+        <div id="log-stats" class="position-absolute top-0 end-0 m-2 bg-dark bg-opacity-75 text-white small px-2 py-1 rounded d-none">
+            <i class="fas fa-list-ul me-1"></i>
             <span id="log-count">0</span> entries
         </div>
     </div>
 
     <!-- Connection Status -->
-    <div id="log-connection-status" class="mt-4 text-sm text-gray-600 flex items-center space-x-2">
-        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-        <span>Connected to log stream</span>
+    <div class="card-footer">
+        <div id="log-connection-status" class="small text-muted d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-circle bg-success" style="width: 0.5rem; height: 0.5rem;"></span>
+            <span>Connected to log stream</span>
+        </div>
     </div>
 </div>
 
@@ -143,7 +145,7 @@ window._filteredLogs = [];
     const autoscrollToggle = document.getElementById('log-autoscroll');
     const clearBtn = document.getElementById('clear-logs-btn');
     const downloadBtn = document.getElementById('download-logs-btn');
-    
+
     // Clone and replace to remove old listeners
     if (realtimeToggle) {
         const newToggle = realtimeToggle.cloneNode(true);
@@ -239,7 +241,7 @@ function setupRealtimeLogs() {
 
     window._logsEventSource.onopen = function() {
         document.getElementById('log-connection-status').innerHTML = `
-            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span class="d-inline-block rounded-circle bg-success" style="width: 0.5rem; height: 0.5rem;"></span>
             <span>Connected to log stream</span>
         `;
     };
@@ -258,7 +260,7 @@ function setupRealtimeLogs() {
 
     window._logsEventSource.onerror = function() {
         document.getElementById('log-connection-status').innerHTML = `
-            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+            <span class="d-inline-block rounded-circle bg-danger" style="width: 0.5rem; height: 0.5rem;"></span>
             <span>Disconnected from log stream</span>
         `;
 
@@ -286,21 +288,21 @@ function processLogs(logsText, append = false) {
 
         // Try to parse journalctl format: "MMM DD HH:MM:SS hostname service[pid]: message"
         // Example: "Oct 13 14:23:45 raspberrypi ledmatrix[1234]: INFO: Starting display"
-        
+
         let timestamp = '';
         let level = 'INFO';
         let message = line;
-        
+
         // Extract timestamp (first part before hostname)
         const timestampMatch = line.match(/^([A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})/);
         if (timestampMatch) {
             timestamp = timestampMatch[1];
-            
+
             // Find the message part (after service name and pid)
             const messageMatch = line.match(/:\s*(.+)$/);
             if (messageMatch) {
                 message = messageMatch[1];
-                
+
                 // Detect log level from message
                 if (message.match(/\b(ERROR|CRITICAL|FATAL)\b/i)) {
                     level = 'ERROR';
@@ -311,7 +313,7 @@ function processLogs(logsText, append = false) {
                 } else if (message.match(/\bINFO\b/i)) {
                     level = 'INFO';
                 }
-                
+
                 // Clean up level prefix from message if it exists
                 message = message.replace(/^(ERROR|WARNING|WARN|INFO|DEBUG):\s*/i, '');
             }
@@ -334,7 +336,7 @@ function processLogs(logsText, append = false) {
             raw: line,
             id: Date.now() + Math.random()
         };
-        
+
         // Don't add duplicate entries when appending
         if (!append || !window._allLogs.find(log => log.raw === line)) {
             window._allLogs.push(logEntry);
@@ -363,12 +365,12 @@ function renderLogs() {
 
     window._filteredLogs.forEach(log => {
         const logElement = document.createElement('div');
-        logElement.className = `log-entry py-1 px-2 hover:bg-gray-800 rounded transition-colors duration-150 ${getLogLevelClass(log.level)}`;
+        logElement.className = `log-entry py-1 px-2 rounded ${getLogLevelClass(log.level)}`;
         logElement.innerHTML = `
-            <div class="flex items-start gap-3 text-xs font-mono">
-                <span class="log-timestamp text-gray-400 flex-shrink-0 w-32">${escapeHtml(log.timestamp)}</span>
-                <span class="log-level flex-shrink-0 px-2 py-0.5 rounded text-xs font-semibold ${getLogLevelBadgeClass(log.level)}">${log.level}</span>
-                <span class="log-message flex-1 ${getLogLevelTextClass(log.level)} break-words">${escapeHtml(log.message)}</span>
+            <div class="d-flex align-items-start gap-2" style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;">
+                <span class="log-timestamp text-secondary flex-shrink-0" style="width: 8rem;">${escapeHtml(log.timestamp)}</span>
+                <span class="log-level flex-shrink-0 badge ${getLogLevelBadgeClass(log.level)}">${log.level}</span>
+                <span class="log-message flex-grow-1 ${getLogLevelTextClass(log.level)}" style="word-break: break-word;">${escapeHtml(log.message)}</span>
             </div>
         `;
         if (window._logsContent) {
@@ -390,29 +392,29 @@ function getLogLevelClass(level) {
 
 function getLogLevelBadgeClass(level) {
     const classes = {
-        'ERROR': 'bg-red-600 text-white',
-        'WARNING': 'bg-yellow-600 text-white',
-        'INFO': 'bg-blue-600 text-white',
-        'DEBUG': 'bg-gray-600 text-white'
+        'ERROR': 'bg-danger',
+        'WARNING': 'bg-warning text-dark',
+        'INFO': 'bg-info text-dark',
+        'DEBUG': 'bg-secondary'
     };
-    return classes[level] || 'bg-gray-600 text-white';
+    return classes[level] || 'bg-secondary';
 }
 
 function getLogLevelTextClass(level) {
     const classes = {
-        'ERROR': 'text-red-300',
-        'WARNING': 'text-yellow-300',
-        'INFO': 'text-gray-200',
-        'DEBUG': 'text-gray-400'
+        'ERROR': 'text-danger-emphasis',
+        'WARNING': 'text-warning-emphasis',
+        'INFO': 'text-light',
+        'DEBUG': 'text-secondary'
     };
-    return classes[level] || 'text-gray-300';
+    return classes[level] || 'text-light';
 }
 
 function filterLogs() {
     const levelFilterEl = document.getElementById('log-level-filter');
     const searchEl = document.getElementById('log-search');
     if (!levelFilterEl || !searchEl) return;
-    
+
     const levelFilter = levelFilterEl.value;
     const searchTerm = searchEl.value.toLowerCase();
 
@@ -445,7 +447,7 @@ function filterLogs() {
 function toggleRealtime() {
     const toggleEl = document.getElementById('log-realtime-toggle');
     if (!toggleEl) return;
-    
+
     window._isRealtime = toggleEl.checked;
 
     if (window._isRealtime) {
@@ -511,7 +513,7 @@ if (typeof window._scrollThreshold === 'undefined') {
 
 function setupAutoscroll() {
     if (!window._logsContent) return;
-    
+
     const observer = new MutationObserver(function() {
         // Use requestAnimationFrame for better timing
         requestAnimationFrame(scrollToBottomIfNeeded);
@@ -576,37 +578,37 @@ function updateLogStats() {
 
     if (stats && count) {
         count.textContent = window._filteredLogs.length;
-        stats.classList.remove('hidden');
+        stats.classList.remove('d-none');
     }
 }
 
 function showLoading() {
-    document.getElementById('logs-loading').classList.remove('hidden');
-    document.getElementById('logs-display').classList.add('hidden');
-    document.getElementById('logs-empty').classList.add('hidden');
+    document.getElementById('logs-loading').classList.remove('d-none');
+    document.getElementById('logs-display').classList.add('d-none');
+    document.getElementById('logs-empty').classList.add('d-none');
 }
 
 function showLogs() {
-    document.getElementById('logs-loading').classList.add('hidden');
-    document.getElementById('logs-display').classList.remove('hidden');
-    document.getElementById('logs-empty').classList.add('hidden');
+    document.getElementById('logs-loading').classList.add('d-none');
+    document.getElementById('logs-display').classList.remove('d-none');
+    document.getElementById('logs-empty').classList.add('d-none');
 }
 
 function hideLoading() {
-    document.getElementById('logs-loading').classList.add('hidden');
+    document.getElementById('logs-loading').classList.add('d-none');
 }
 
 function showEmptyState() {
-    document.getElementById('logs-loading').classList.add('hidden');
-    document.getElementById('logs-display').classList.add('hidden');
-    document.getElementById('logs-empty').classList.remove('hidden');
-    document.getElementById('log-stats').classList.add('hidden');
+    document.getElementById('logs-loading').classList.add('d-none');
+    document.getElementById('logs-display').classList.add('d-none');
+    document.getElementById('logs-empty').classList.remove('d-none');
+    document.getElementById('log-stats').classList.add('d-none');
 }
 
 function showError(message) {
     if (window._logsContent) {
-        window._logsContent.innerHTML = `<div class="text-red-400 p-4">${escapeHtml(message)}</div>`;
-        window._logsContent.classList.remove('hidden');
+        window._logsContent.innerHTML = `<div class="text-danger p-3">${escapeHtml(message)}</div>`;
+        window._logsContent.classList.remove('d-none');
     }
 }
 

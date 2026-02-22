@@ -1,0 +1,80 @@
+<!-- Sidebar navigation (shared between desktop sidebar and mobile offcanvas) -->
+<nav class="py-2">
+    <!-- System section -->
+    <div class="sidebar-section-label">System</div>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'overview'; closeMobileNav()"
+               :class="activeTab === 'overview' ? 'active' : ''">
+                <i class="fas fa-tachometer-alt fa-fw"></i> Overview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'general'; closeMobileNav()"
+               :class="activeTab === 'general' ? 'active' : ''">
+                <i class="fas fa-sliders-h fa-fw"></i> General
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'wifi'; closeMobileNav()"
+               :class="activeTab === 'wifi' ? 'active' : ''">
+                <i class="fas fa-wifi fa-fw"></i> WiFi
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'schedule'; closeMobileNav()"
+               :class="activeTab === 'schedule' ? 'active' : ''">
+                <i class="fas fa-clock fa-fw"></i> Schedule
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'display'; closeMobileNav()"
+               :class="activeTab === 'display' ? 'active' : ''">
+                <i class="fas fa-desktop fa-fw"></i> Display
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'config-editor'; closeMobileNav()"
+               :class="activeTab === 'config-editor' ? 'active' : ''">
+                <i class="fas fa-file-code fa-fw"></i> Config Editor
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'fonts'; closeMobileNav()"
+               :class="activeTab === 'fonts' ? 'active' : ''">
+                <i class="fas fa-font fa-fw"></i> Fonts
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'logs'; closeMobileNav()"
+               :class="activeTab === 'logs' ? 'active' : ''">
+                <i class="fas fa-file-alt fa-fw"></i> Logs
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'cache'; closeMobileNav()"
+               :class="activeTab === 'cache' ? 'active' : ''">
+                <i class="fas fa-database fa-fw"></i> Cache
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="activeTab = 'operation-history'; closeMobileNav()"
+               :class="activeTab === 'operation-history' ? 'active' : ''">
+                <i class="fas fa-history fa-fw"></i> Operation History
+            </a>
+        </li>
+    </ul>
+
+    <!-- Plugins section -->
+    <div class="sidebar-section-label mt-3">Plugins</div>
+    <ul class="nav flex-column sidebar-plugin-list">
+        <li class="nav-item">
+            <a class="nav-link" href="#"
+               @click.prevent="activeTab = 'plugins'; closeMobileNav(); $nextTick(() => { if (typeof htmx !== 'undefined') { var el = document.getElementById('plugins-content'); if (el && !el.hasAttribute('data-loaded')) { htmx.trigger(el, 'load'); } } })"
+               :class="activeTab === 'plugins' ? 'active' : ''">
+                <i class="fas fa-plug fa-fw"></i> Plugin Manager
+            </a>
+        </li>
+        <!-- Dynamic plugin tabs will be inserted here by JavaScript -->
+    </ul>
+</nav>

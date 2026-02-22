@@ -1,0 +1,31 @@
+    <nav class="navbar navbar-dark fixed-top border-bottom" style="height: 56px; background-color: var(--lm-surface-card); border-color: var(--lm-border) !important;">
+        <div class="container-fluid px-3">
+            <!-- Mobile hamburger (only visible < lg) -->
+            <button class="btn btn-link text-body d-lg-none p-0 me-2 border-0" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas"
+                    aria-label="Toggle navigation">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="/v3/" style="font-family: 'DM Sans', sans-serif;">
+                <i class="fas fa-tv" style="color: var(--lm-primary);"></i>
+                <span class="fw-semibold">LED Matrix Control</span>
+            </a>
+            <!-- Right side -->
+            <div class="d-flex align-items-center gap-3">
+                <button id="theme-toggle" class="btn btn-link text-body p-0 border-0" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <i id="theme-icon-dark" class="fas fa-moon"></i>
+                    <i id="theme-icon-light" class="fas fa-sun hidden"></i>
+                </button>
+                <span id="connection-status" class="d-flex align-items-center gap-1 small">
+                    <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: var(--lm-success);"></span>
+                    <span class="d-none d-md-inline text-muted">Connected</span>
+                </span>
+                <div class="d-none d-md-flex align-items-center gap-3 small text-muted">
+                    <span id="cpu-stat"><i class="fas fa-microchip me-1"></i>--%</span>
+                    <span id="mem-stat"><i class="fas fa-memory me-1"></i>--%</span>
+                    <span id="temp-stat"><i class="fas fa-thermometer-half me-1"></i>--°C</span>
+                </div>
+            </div>
+        </div>
+    </nav>

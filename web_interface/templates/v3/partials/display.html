@@ -1,400 +1,408 @@
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="border-b border-gray-200 pb-4 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900">Display Settings</h2>
-        <p class="mt-1 text-sm text-gray-600">Configure LED matrix hardware settings and display options.</p>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="card-title mb-1">Display Settings</h2>
+        <p class="card-subtitle text-muted small mb-0">Configure LED matrix hardware settings and display options.</p>
     </div>
 
-    <form hx-post="/api/v3/config/main"
-          hx-ext="json-enc"
-          hx-headers='{"Content-Type": "application/json"}'
-          hx-swap="none"
-          hx-on:htmx:after-request="showNotification(event.detail.xhr.responseJSON?.message || 'Display settings saved', event.detail.xhr.responseJSON?.status || 'success')"
-          class="space-y-6"
-          novalidate
-          onsubmit="fixInvalidNumberInputs(this); return true;">
+    <div class="card-body">
+        <form hx-post="/api/v3/config/main"
+              hx-ext="json-enc"
+              hx-headers='{"Content-Type": "application/json"}'
+              hx-swap="none"
+              hx-on:htmx:after-request="showNotification(event.detail.xhr.responseJSON?.message || 'Display settings saved', event.detail.xhr.responseJSON?.status || 'success')"
+              novalidate
+              onsubmit="fixInvalidNumberInputs(this); return true;">
 
-        <!-- Hardware Settings -->
-        <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-md font-medium text-gray-900 mb-4">Hardware Configuration</h3>
+            <!-- Hardware Settings -->
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Hardware Configuration</h5>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-4">
-                <div class="form-group">
-                    <label for="rows" class="block text-sm font-medium text-gray-700">Rows</label>
-                    <input type="number"
-                           id="rows"
-                           name="rows"
-                           value="{{ main_config.display.hardware.rows or 32 }}"
-                           min="1"
-                           max="64"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">Number of LED rows</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="cols" class="block text-sm font-medium text-gray-700">Columns</label>
-                    <input type="number"
-                           id="cols"
-                           name="cols"
-                           value="{{ main_config.display.hardware.cols or 64 }}"
-                           min="1"
-                           max="128"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">Number of LED columns</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="chain_length" class="block text-sm font-medium text-gray-700">Chain Length</label>
-                    <input type="number"
-                           id="chain_length"
-                           name="chain_length"
-                           value="{{ main_config.display.hardware.chain_length or 2 }}"
-                           min="1"
-                           max="8"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">Number of LED panels chained together</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="parallel" class="block text-sm font-medium text-gray-700">Parallel</label>
-                    <input type="number"
-                           id="parallel"
-                           name="parallel"
-                           value="{{ main_config.display.hardware.parallel or 1 }}"
-                           min="1"
-                           max="4"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">Number of parallel chains</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="brightness" class="block text-sm font-medium text-gray-700">Brightness</label>
-                    <div class="flex items-center space-x-2">
-                        <input type="range"
-                               id="brightness"
-                               name="brightness"
-                               value="{{ main_config.display.hardware.brightness or 95 }}"
-                               min="1"
-                               max="100"
-                               class="flex-1">
-                        <span id="brightness-value" class="text-sm font-medium w-12">{{ main_config.display.hardware.brightness or 95 }}</span>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-600">LED brightness: <span id="brightness-display">{{ main_config.display.hardware.brightness or 95 }}</span>%</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="hardware_mapping" class="block text-sm font-medium text-gray-700">Hardware Mapping</label>
-                    <select id="hardware_mapping" name="hardware_mapping" class="form-control">
-                        <option value="adafruit-hat-pwm" {% if main_config.display.hardware.hardware_mapping == "adafruit-hat-pwm" %}selected{% endif %}>Adafruit HAT PWM</option>
-                        <option value="adafruit-hat" {% if main_config.display.hardware.hardware_mapping == "adafruit-hat" %}selected{% endif %}>Adafruit HAT</option>
-                        <option value="regular" {% if main_config.display.hardware.hardware_mapping == "regular" %}selected{% endif %}>Regular</option>
-                        <option value="regular-pi1" {% if main_config.display.hardware.hardware_mapping == "regular-pi1" %}selected{% endif %}>Regular Pi1</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="form-group">
-                    <label for="led_rgb_sequence" class="block text-sm font-medium text-gray-700">LED RGB Sequence</label>
-                    <select id="led_rgb_sequence" name="led_rgb_sequence" class="form-control">
-                        <option value="RGB" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "RGB" %}selected{% endif %}>RGB</option>
-                        <option value="RBG" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "RBG" %}selected{% endif %}>RBG</option>
-                        <option value="GRB" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "GRB" %}selected{% endif %}>GRB</option>
-                        <option value="GBR" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "GBR" %}selected{% endif %}>GBR</option>
-                        <option value="BRG" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "BRG" %}selected{% endif %}>BRG</option>
-                        <option value="BGR" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "BGR" %}selected{% endif %}>BGR</option>
-                    </select>
-                    <p class="mt-1 text-sm text-gray-600">Color channel order for your LED panels</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="multiplexing" class="block text-sm font-medium text-gray-700">Multiplexing</label>
-                    <select id="multiplexing" name="multiplexing" class="form-control">
-                        <option value="0" {% if main_config.display.hardware.get('multiplexing', 0)|int == 0 %}selected{% endif %}>0 - Direct</option>
-                        <option value="1" {% if main_config.display.hardware.get('multiplexing', 0)|int == 1 %}selected{% endif %}>1 - Stripe</option>
-                        <option value="2" {% if main_config.display.hardware.get('multiplexing', 0)|int == 2 %}selected{% endif %}>2 - Checkered</option>
-                        <option value="3" {% if main_config.display.hardware.get('multiplexing', 0)|int == 3 %}selected{% endif %}>3 - Spiral</option>
-                        <option value="4" {% if main_config.display.hardware.get('multiplexing', 0)|int == 4 %}selected{% endif %}>4 - ZStripe</option>
-                        <option value="5" {% if main_config.display.hardware.get('multiplexing', 0)|int == 5 %}selected{% endif %}>5 - ZnMirrorZStripe</option>
-                        <option value="6" {% if main_config.display.hardware.get('multiplexing', 0)|int == 6 %}selected{% endif %}>6 - Coreman</option>
-                        <option value="7" {% if main_config.display.hardware.get('multiplexing', 0)|int == 7 %}selected{% endif %}>7 - Kaler2Scan</option>
-                        <option value="8" {% if main_config.display.hardware.get('multiplexing', 0)|int == 8 %}selected{% endif %}>8 - ZStripeUneven</option>
-                        <option value="9" {% if main_config.display.hardware.get('multiplexing', 0)|int == 9 %}selected{% endif %}>9 - P10-128x4-Z</option>
-                        <option value="10" {% if main_config.display.hardware.get('multiplexing', 0)|int == 10 %}selected{% endif %}>10 - QiangLiQ8</option>
-                        <option value="11" {% if main_config.display.hardware.get('multiplexing', 0)|int == 11 %}selected{% endif %}>11 - InversedZStripe</option>
-                        <option value="12" {% if main_config.display.hardware.get('multiplexing', 0)|int == 12 %}selected{% endif %}>12 - P10Outdoor1R1G1B v1</option>
-                        <option value="13" {% if main_config.display.hardware.get('multiplexing', 0)|int == 13 %}selected{% endif %}>13 - P10Outdoor1R1G1B v2</option>
-                        <option value="14" {% if main_config.display.hardware.get('multiplexing', 0)|int == 14 %}selected{% endif %}>14 - P10Outdoor1R1G1B v3</option>
-                        <option value="15" {% if main_config.display.hardware.get('multiplexing', 0)|int == 15 %}selected{% endif %}>15 - P10CoremanMapper</option>
-                        <option value="16" {% if main_config.display.hardware.get('multiplexing', 0)|int == 16 %}selected{% endif %}>16 - P8Outdoor1R1G1B</option>
-                        <option value="17" {% if main_config.display.hardware.get('multiplexing', 0)|int == 17 %}selected{% endif %}>17 - FlippedStripe</option>
-                        <option value="18" {% if main_config.display.hardware.get('multiplexing', 0)|int == 18 %}selected{% endif %}>18 - P10-32x16-HalfScan</option>
-                        <option value="19" {% if main_config.display.hardware.get('multiplexing', 0)|int == 19 %}selected{% endif %}>19 - P10-32x16-QuarterScan</option>
-                        <option value="20" {% if main_config.display.hardware.get('multiplexing', 0)|int == 20 %}selected{% endif %}>20 - P3Outdoor-64x64</option>
-                        <option value="21" {% if main_config.display.hardware.get('multiplexing', 0)|int == 21 %}selected{% endif %}>21 - DoubleZMultiplex</option>
-                        <option value="22" {% if main_config.display.hardware.get('multiplexing', 0)|int == 22 %}selected{% endif %}>22 - P4Outdoor-80x40</option>
-                    </select>
-                    <p class="mt-1 text-sm text-gray-600">Multiplexing scheme for your LED panels</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="panel_type" class="block text-sm font-medium text-gray-700">Panel Type</label>
-                    <select id="panel_type" name="panel_type" class="form-control">
-                        <option value="" {% if not main_config.display.hardware.get('panel_type', '') %}selected{% endif %}>Standard</option>
-                        <option value="FM6126A" {% if main_config.display.hardware.get('panel_type', '') == "FM6126A" %}selected{% endif %}>FM6126A</option>
-                        <option value="FM6127" {% if main_config.display.hardware.get('panel_type', '') == "FM6127" %}selected{% endif %}>FM6127</option>
-                    </select>
-                    <p class="mt-1 text-sm text-gray-600">Special panel chipset initialization (use Standard unless your panel requires it)</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="gpio_slowdown" class="block text-sm font-medium text-gray-700">GPIO Slowdown</label>
-                    <input type="number"
-                           id="gpio_slowdown"
-                           name="gpio_slowdown"
-                           value="{{ main_config.display.runtime.gpio_slowdown or 3 }}"
-                           min="0"
-                           max="5"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">GPIO slowdown factor (0-5)</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="scan_mode" class="block text-sm font-medium text-gray-700">Scan Mode</label>
-                    <input type="number"
-                           id="scan_mode"
-                           name="scan_mode"
-                           value="{{ main_config.display.hardware.scan_mode or 0 }}"
-                           min="0"
-                           max="1"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">Scan mode for LED matrix (0-1)</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="pwm_bits" class="block text-sm font-medium text-gray-700">PWM Bits</label>
-                    <input type="number"
-                           id="pwm_bits"
-                           name="pwm_bits"
-                           value="{{ main_config.display.hardware.pwm_bits or 9 }}"
-                           min="1"
-                           max="11"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">PWM bits for brightness control (1-11)</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="pwm_dither_bits" class="block text-sm font-medium text-gray-700">PWM Dither Bits</label>
-                    <input type="number"
-                           id="pwm_dither_bits"
-                           name="pwm_dither_bits"
-                           value="{{ main_config.display.hardware.pwm_dither_bits or 1 }}"
-                           min="0"
-                           max="4"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">PWM dither bits (0-4)</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="pwm_lsb_nanoseconds" class="block text-sm font-medium text-gray-700">PWM LSB Nanoseconds</label>
-                    <input type="number"
-                           id="pwm_lsb_nanoseconds"
-                           name="pwm_lsb_nanoseconds"
-                           value="{{ main_config.display.hardware.pwm_lsb_nanoseconds or 130 }}"
-                           min="50"
-                           max="500"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">PWM LSB nanoseconds (50-500)</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="limit_refresh_rate_hz" class="block text-sm font-medium text-gray-700">Limit Refresh Rate (Hz)</label>
-                    <input type="number"
-                           id="limit_refresh_rate_hz"
-                           name="limit_refresh_rate_hz"
-                           value="{{ main_config.display.hardware.limit_refresh_rate_hz or 120 }}"
-                           min="1"
-                           max="1000"
-                           class="form-control">
-                    <p class="mt-1 text-sm text-gray-600">Limit refresh rate in Hz (1-1000)</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Display Options -->
-        <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-md font-medium text-gray-900 mb-4">Display Options</h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label class="flex items-center">
-                        <input type="checkbox"
-                               name="disable_hardware_pulsing"
-                               value="true"
-                               {% if main_config.display.hardware.disable_hardware_pulsing %}checked{% endif %}
-                               class="form-control h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <span class="ml-2 text-sm font-medium text-gray-900">Disable Hardware Pulsing</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="flex items-center">
-                        <input type="checkbox"
-                               name="inverse_colors"
-                               value="true"
-                               {% if main_config.display.hardware.inverse_colors %}checked{% endif %}
-                               class="form-control h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <span class="ml-2 text-sm font-medium text-gray-900">Inverse Colors</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="flex items-center">
-                        <input type="checkbox"
-                               name="show_refresh_rate"
-                               value="true"
-                               {% if main_config.display.hardware.show_refresh_rate %}checked{% endif %}
-                               class="form-control h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <span class="ml-2 text-sm font-medium text-gray-900">Show Refresh Rate</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="flex items-center">
-                        <input type="checkbox"
-                               name="use_short_date_format"
-                               value="true"
-                               {% if main_config.display.use_short_date_format %}checked{% endif %}
-                               class="form-control h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <span class="ml-2 text-sm font-medium text-gray-900">Use Short Date Format</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Dynamic Duration Settings -->
-            <div class="mt-6 pt-4 border-t border-gray-300">
-                <h4 class="text-sm font-medium text-gray-900 mb-3">Dynamic Duration</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label for="max_dynamic_duration_seconds" class="block text-sm font-medium text-gray-700">Max Dynamic Duration (seconds)</label>
-                        <input type="number"
-                               id="max_dynamic_duration_seconds"
-                               name="max_dynamic_duration_seconds"
-                               value="{{ main_config.display.get('dynamic_duration', {}).get('max_duration_seconds', 180) }}"
-                               min="30"
-                               max="1800"
-                               class="form-control">
-                        <p class="mt-1 text-sm text-gray-600">Maximum time plugins can extend display duration (30-1800 seconds)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vegas Scroll Mode Settings -->
-        <div class="bg-gray-50 rounded-lg p-4 mt-6">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 id="vegas_scroll_label" class="text-md font-medium text-gray-900">
-                        <i class="fas fa-scroll mr-2"></i>Vegas Scroll Mode
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-600">Combine all plugin content into one continuous scrolling ticker display.</p>
-                </div>
-                <label class="flex items-center cursor-pointer">
-                    <input type="checkbox"
-                           id="vegas_scroll_enabled"
-                           name="vegas_scroll_enabled"
-                           value="true"
-                           aria-label="Enable Vegas Scroll Mode"
-                           {% if main_config.display.get('vegas_scroll', {}).get('enabled', false) %}checked{% endif %}
-                           class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <span class="ml-2 text-sm font-medium text-gray-700">Enable</span>
-                </label>
-            </div>
-
-            <!-- Vegas Settings (shown when enabled) -->
-            <div id="vegas_scroll_settings" class="space-y-4" style="{% if not main_config.display.get('vegas_scroll', {}).get('enabled', false) %}display: none;{% endif %}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label for="vegas_scroll_speed" class="block text-sm font-medium text-gray-700">Scroll Speed (pixels/second)</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="range"
-                                   id="vegas_scroll_speed"
-                                   name="vegas_scroll_speed"
-                                   value="{{ main_config.display.get('vegas_scroll', {}).get('scroll_speed', 50) }}"
-                                   min="10"
-                                   max="200"
-                                   step="5"
-                                   class="flex-1">
-                            <span id="vegas_scroll_speed_value" class="text-sm font-medium w-12">{{ main_config.display.get('vegas_scroll', {}).get('scroll_speed', 50) }}</span>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6 col-md-3">
+                            <label for="rows" class="form-label fw-medium">Rows</label>
+                            <input type="number"
+                                   id="rows"
+                                   name="rows"
+                                   value="{{ main_config.display.hardware.rows or 32 }}"
+                                   min="1"
+                                   max="64"
+                                   class="form-control">
+                            <div class="form-text">Number of LED rows</div>
                         </div>
-                        <p class="mt-1 text-sm text-gray-600">Speed of the scrolling ticker (10-200 px/s)</p>
+
+                        <div class="col-6 col-md-3">
+                            <label for="cols" class="form-label fw-medium">Columns</label>
+                            <input type="number"
+                                   id="cols"
+                                   name="cols"
+                                   value="{{ main_config.display.hardware.cols or 64 }}"
+                                   min="1"
+                                   max="128"
+                                   class="form-control">
+                            <div class="form-text">Number of LED columns</div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <label for="chain_length" class="form-label fw-medium">Chain Length</label>
+                            <input type="number"
+                                   id="chain_length"
+                                   name="chain_length"
+                                   value="{{ main_config.display.hardware.chain_length or 2 }}"
+                                   min="1"
+                                   max="8"
+                                   class="form-control">
+                            <div class="form-text">Panels chained together</div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <label for="parallel" class="form-label fw-medium">Parallel</label>
+                            <input type="number"
+                                   id="parallel"
+                                   name="parallel"
+                                   value="{{ main_config.display.hardware.parallel or 1 }}"
+                                   min="1"
+                                   max="4"
+                                   class="form-control">
+                            <div class="form-text">Number of parallel chains</div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="vegas_separator_width" class="block text-sm font-medium text-gray-700">Separator Width (pixels)</label>
-                        <input type="number"
-                               id="vegas_separator_width"
-                               name="vegas_separator_width"
-                               value="{{ main_config.display.get('vegas_scroll', {}).get('separator_width', 32) }}"
-                               min="0"
-                               max="128"
-                               class="form-control">
-                        <p class="mt-1 text-sm text-gray-600">Gap between plugin content blocks (0-128 px)</p>
-                    </div>
-                </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="brightness" class="form-label fw-medium">Brightness</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="range"
+                                       id="brightness"
+                                       name="brightness"
+                                       value="{{ main_config.display.hardware.brightness or 95 }}"
+                                       min="1"
+                                       max="100"
+                                       class="form-range flex-grow-1">
+                                <span id="brightness-value" class="fw-medium small" style="min-width: 2rem;">{{ main_config.display.hardware.brightness or 95 }}</span>
+                            </div>
+                            <div class="form-text">LED brightness: <span id="brightness-display">{{ main_config.display.hardware.brightness or 95 }}</span>%</div>
+                        </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label for="vegas_target_fps" class="block text-sm font-medium text-gray-700">Target FPS</label>
-                        <select id="vegas_target_fps" name="vegas_target_fps" class="form-control">
-                            <option value="60" {% if main_config.display.get('vegas_scroll', {}).get('target_fps', 125) == 60 %}selected{% endif %}>60 FPS (Lower CPU)</option>
-                            <option value="90" {% if main_config.display.get('vegas_scroll', {}).get('target_fps', 125) == 90 %}selected{% endif %}>90 FPS (Balanced)</option>
-                            <option value="125" {% if main_config.display.get('vegas_scroll', {}).get('target_fps', 125) == 125 %}selected{% endif %}>125 FPS (Smoothest)</option>
-                        </select>
-                        <p class="mt-1 text-sm text-gray-600">Higher FPS = smoother scroll, more CPU usage</p>
+                        <div class="col-12 col-md-6">
+                            <label for="hardware_mapping" class="form-label fw-medium">Hardware Mapping</label>
+                            <select id="hardware_mapping" name="hardware_mapping" class="form-select">
+                                <option value="adafruit-hat-pwm" {% if main_config.display.hardware.hardware_mapping == "adafruit-hat-pwm" %}selected{% endif %}>Adafruit HAT PWM</option>
+                                <option value="adafruit-hat" {% if main_config.display.hardware.hardware_mapping == "adafruit-hat" %}selected{% endif %}>Adafruit HAT</option>
+                                <option value="regular" {% if main_config.display.hardware.hardware_mapping == "regular" %}selected{% endif %}>Regular</option>
+                                <option value="regular-pi1" {% if main_config.display.hardware.hardware_mapping == "regular-pi1" %}selected{% endif %}>Regular Pi1</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="vegas_buffer_ahead" class="block text-sm font-medium text-gray-700">Buffer Ahead</label>
-                        <select id="vegas_buffer_ahead" name="vegas_buffer_ahead" class="form-control">
-                            <option value="1" {% if main_config.display.get('vegas_scroll', {}).get('buffer_ahead', 2) == 1 %}selected{% endif %}>1 Plugin (Less memory)</option>
-                            <option value="2" {% if main_config.display.get('vegas_scroll', {}).get('buffer_ahead', 2) == 2 %}selected{% endif %}>2 Plugins (Recommended)</option>
-                            <option value="3" {% if main_config.display.get('vegas_scroll', {}).get('buffer_ahead', 2) == 3 %}selected{% endif %}>3 Plugins (More buffer)</option>
-                        </select>
-                        <p class="mt-1 text-sm text-gray-600">How many plugins to pre-load ahead</p>
-                    </div>
-                </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-4">
+                            <label for="led_rgb_sequence" class="form-label fw-medium">LED RGB Sequence</label>
+                            <select id="led_rgb_sequence" name="led_rgb_sequence" class="form-select">
+                                <option value="RGB" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "RGB" %}selected{% endif %}>RGB</option>
+                                <option value="RBG" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "RBG" %}selected{% endif %}>RBG</option>
+                                <option value="GRB" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "GRB" %}selected{% endif %}>GRB</option>
+                                <option value="GBR" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "GBR" %}selected{% endif %}>GBR</option>
+                                <option value="BRG" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "BRG" %}selected{% endif %}>BRG</option>
+                                <option value="BGR" {% if main_config.display.hardware.get('led_rgb_sequence', 'RGB') == "BGR" %}selected{% endif %}>BGR</option>
+                            </select>
+                            <div class="form-text">Color channel order for your LED panels</div>
+                        </div>
 
-                <!-- Plugin Order Section -->
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <h4 class="text-sm font-medium text-gray-900 mb-3">Plugin Order</h4>
-                    <p class="text-sm text-gray-600 mb-3">Drag to reorder plugins. Uncheck to exclude from Vegas scroll.</p>
-                    <div id="vegas_plugin_order" class="space-y-2 bg-white rounded-lg p-3 border border-gray-200">
-                        <!-- Plugin order list will be populated by JavaScript -->
-                        <p class="text-sm text-gray-500 italic">Loading plugins...</p>
+                        <div class="col-12 col-md-4">
+                            <label for="multiplexing" class="form-label fw-medium">Multiplexing</label>
+                            <select id="multiplexing" name="multiplexing" class="form-select">
+                                <option value="0" {% if main_config.display.hardware.get('multiplexing', 0)|int == 0 %}selected{% endif %}>0 - Direct</option>
+                                <option value="1" {% if main_config.display.hardware.get('multiplexing', 0)|int == 1 %}selected{% endif %}>1 - Stripe</option>
+                                <option value="2" {% if main_config.display.hardware.get('multiplexing', 0)|int == 2 %}selected{% endif %}>2 - Checkered</option>
+                                <option value="3" {% if main_config.display.hardware.get('multiplexing', 0)|int == 3 %}selected{% endif %}>3 - Spiral</option>
+                                <option value="4" {% if main_config.display.hardware.get('multiplexing', 0)|int == 4 %}selected{% endif %}>4 - ZStripe</option>
+                                <option value="5" {% if main_config.display.hardware.get('multiplexing', 0)|int == 5 %}selected{% endif %}>5 - ZnMirrorZStripe</option>
+                                <option value="6" {% if main_config.display.hardware.get('multiplexing', 0)|int == 6 %}selected{% endif %}>6 - Coreman</option>
+                                <option value="7" {% if main_config.display.hardware.get('multiplexing', 0)|int == 7 %}selected{% endif %}>7 - Kaler2Scan</option>
+                                <option value="8" {% if main_config.display.hardware.get('multiplexing', 0)|int == 8 %}selected{% endif %}>8 - ZStripeUneven</option>
+                                <option value="9" {% if main_config.display.hardware.get('multiplexing', 0)|int == 9 %}selected{% endif %}>9 - P10-128x4-Z</option>
+                                <option value="10" {% if main_config.display.hardware.get('multiplexing', 0)|int == 10 %}selected{% endif %}>10 - QiangLiQ8</option>
+                                <option value="11" {% if main_config.display.hardware.get('multiplexing', 0)|int == 11 %}selected{% endif %}>11 - InversedZStripe</option>
+                                <option value="12" {% if main_config.display.hardware.get('multiplexing', 0)|int == 12 %}selected{% endif %}>12 - P10Outdoor1R1G1B v1</option>
+                                <option value="13" {% if main_config.display.hardware.get('multiplexing', 0)|int == 13 %}selected{% endif %}>13 - P10Outdoor1R1G1B v2</option>
+                                <option value="14" {% if main_config.display.hardware.get('multiplexing', 0)|int == 14 %}selected{% endif %}>14 - P10Outdoor1R1G1B v3</option>
+                                <option value="15" {% if main_config.display.hardware.get('multiplexing', 0)|int == 15 %}selected{% endif %}>15 - P10CoremanMapper</option>
+                                <option value="16" {% if main_config.display.hardware.get('multiplexing', 0)|int == 16 %}selected{% endif %}>16 - P8Outdoor1R1G1B</option>
+                                <option value="17" {% if main_config.display.hardware.get('multiplexing', 0)|int == 17 %}selected{% endif %}>17 - FlippedStripe</option>
+                                <option value="18" {% if main_config.display.hardware.get('multiplexing', 0)|int == 18 %}selected{% endif %}>18 - P10-32x16-HalfScan</option>
+                                <option value="19" {% if main_config.display.hardware.get('multiplexing', 0)|int == 19 %}selected{% endif %}>19 - P10-32x16-QuarterScan</option>
+                                <option value="20" {% if main_config.display.hardware.get('multiplexing', 0)|int == 20 %}selected{% endif %}>20 - P3Outdoor-64x64</option>
+                                <option value="21" {% if main_config.display.hardware.get('multiplexing', 0)|int == 21 %}selected{% endif %}>21 - DoubleZMultiplex</option>
+                                <option value="22" {% if main_config.display.hardware.get('multiplexing', 0)|int == 22 %}selected{% endif %}>22 - P4Outdoor-80x40</option>
+                            </select>
+                            <div class="form-text">Multiplexing scheme for your LED panels</div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label for="panel_type" class="form-label fw-medium">Panel Type</label>
+                            <select id="panel_type" name="panel_type" class="form-select">
+                                <option value="" {% if not main_config.display.hardware.get('panel_type', '') %}selected{% endif %}>Standard</option>
+                                <option value="FM6126A" {% if main_config.display.hardware.get('panel_type', '') == "FM6126A" %}selected{% endif %}>FM6126A</option>
+                                <option value="FM6127" {% if main_config.display.hardware.get('panel_type', '') == "FM6127" %}selected{% endif %}>FM6127</option>
+                            </select>
+                            <div class="form-text">Special panel chipset initialization</div>
+                        </div>
                     </div>
-                    <input type="hidden" id="vegas_plugin_order_value" name="vegas_plugin_order" value="{{ main_config.display.get('vegas_scroll', {}).get('plugin_order', [])|tojson }}">
-                    <input type="hidden" id="vegas_excluded_plugins_value" name="vegas_excluded_plugins" value="{{ main_config.display.get('vegas_scroll', {}).get('excluded_plugins', [])|tojson }}">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="gpio_slowdown" class="form-label fw-medium">GPIO Slowdown</label>
+                            <input type="number"
+                                   id="gpio_slowdown"
+                                   name="gpio_slowdown"
+                                   value="{{ main_config.display.runtime.gpio_slowdown or 3 }}"
+                                   min="0"
+                                   max="5"
+                                   class="form-control">
+                            <div class="form-text">GPIO slowdown factor (0-5)</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="scan_mode" class="form-label fw-medium">Scan Mode</label>
+                            <input type="number"
+                                   id="scan_mode"
+                                   name="scan_mode"
+                                   value="{{ main_config.display.hardware.scan_mode or 0 }}"
+                                   min="0"
+                                   max="1"
+                                   class="form-control">
+                            <div class="form-text">Scan mode for LED matrix (0-1)</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="pwm_bits" class="form-label fw-medium">PWM Bits</label>
+                            <input type="number"
+                                   id="pwm_bits"
+                                   name="pwm_bits"
+                                   value="{{ main_config.display.hardware.pwm_bits or 9 }}"
+                                   min="1"
+                                   max="11"
+                                   class="form-control">
+                            <div class="form-text">PWM bits for brightness control (1-11)</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="pwm_dither_bits" class="form-label fw-medium">PWM Dither Bits</label>
+                            <input type="number"
+                                   id="pwm_dither_bits"
+                                   name="pwm_dither_bits"
+                                   value="{{ main_config.display.hardware.pwm_dither_bits or 1 }}"
+                                   min="0"
+                                   max="4"
+                                   class="form-control">
+                            <div class="form-text">PWM dither bits (0-4)</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label for="pwm_lsb_nanoseconds" class="form-label fw-medium">PWM LSB Nanoseconds</label>
+                            <input type="number"
+                                   id="pwm_lsb_nanoseconds"
+                                   name="pwm_lsb_nanoseconds"
+                                   value="{{ main_config.display.hardware.pwm_lsb_nanoseconds or 130 }}"
+                                   min="50"
+                                   max="500"
+                                   class="form-control">
+                            <div class="form-text">PWM LSB nanoseconds (50-500)</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="limit_refresh_rate_hz" class="form-label fw-medium">Limit Refresh Rate (Hz)</label>
+                            <input type="number"
+                                   id="limit_refresh_rate_hz"
+                                   name="limit_refresh_rate_hz"
+                                   value="{{ main_config.display.hardware.limit_refresh_rate_hz or 120 }}"
+                                   min="1"
+                                   max="1000"
+                                   class="form-control">
+                            <div class="form-text">Limit refresh rate in Hz (1-1000)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Submit Button -->
-        <div class="flex justify-end">
-            <button type="submit"
-                    class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                <i class="fas fa-save mr-2"></i>
-                Save Display Settings
-            </button>
-        </div>
-    </form>
+            <!-- Display Options -->
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Display Options</h5>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <div class="form-check form-switch">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="disable_hardware_pulsing"
+                                       name="disable_hardware_pulsing"
+                                       value="true"
+                                       {% if main_config.display.hardware.disable_hardware_pulsing %}checked{% endif %}>
+                                <label class="form-check-label fw-medium" for="disable_hardware_pulsing">Disable Hardware Pulsing</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-check form-switch">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="inverse_colors"
+                                       name="inverse_colors"
+                                       value="true"
+                                       {% if main_config.display.hardware.inverse_colors %}checked{% endif %}>
+                                <label class="form-check-label fw-medium" for="inverse_colors">Inverse Colors</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-check form-switch">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="show_refresh_rate"
+                                       name="show_refresh_rate"
+                                       value="true"
+                                       {% if main_config.display.hardware.show_refresh_rate %}checked{% endif %}>
+                                <label class="form-check-label fw-medium" for="show_refresh_rate">Show Refresh Rate</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="form-check form-switch">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="use_short_date_format"
+                                       name="use_short_date_format"
+                                       value="true"
+                                       {% if main_config.display.use_short_date_format %}checked{% endif %}>
+                                <label class="form-check-label fw-medium" for="use_short_date_format">Use Short Date Format</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Duration Settings -->
+                    <hr>
+                    <h6 class="fw-medium mb-3">Dynamic Duration</h6>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label for="max_dynamic_duration_seconds" class="form-label fw-medium">Max Dynamic Duration (seconds)</label>
+                            <input type="number"
+                                   id="max_dynamic_duration_seconds"
+                                   name="max_dynamic_duration_seconds"
+                                   value="{{ main_config.display.get('dynamic_duration', {}).get('max_duration_seconds', 180) }}"
+                                   min="30"
+                                   max="1800"
+                                   class="form-control">
+                            <div class="form-text">Maximum time plugins can extend display duration (30-1800 seconds)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vegas Scroll Mode Settings -->
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div>
+                            <h5 id="vegas_scroll_label" class="card-title">
+                                <i class="fas fa-scroll me-2"></i>Vegas Scroll Mode
+                            </h5>
+                            <p class="small text-muted mb-0">Combine all plugin content into one continuous scrolling ticker display.</p>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="vegas_scroll_enabled"
+                                   name="vegas_scroll_enabled"
+                                   value="true"
+                                   aria-label="Enable Vegas Scroll Mode"
+                                   {% if main_config.display.get('vegas_scroll', {}).get('enabled', false) %}checked{% endif %}>
+                            <label class="form-check-label fw-medium" for="vegas_scroll_enabled">Enable</label>
+                        </div>
+                    </div>
+
+                    <!-- Vegas Settings (shown when enabled) -->
+                    <div id="vegas_scroll_settings" style="{% if not main_config.display.get('vegas_scroll', {}).get('enabled', false) %}display: none;{% endif %}">
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
+                                <label for="vegas_scroll_speed" class="form-label fw-medium">Scroll Speed (pixels/second)</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="range"
+                                           id="vegas_scroll_speed"
+                                           name="vegas_scroll_speed"
+                                           value="{{ main_config.display.get('vegas_scroll', {}).get('scroll_speed', 50) }}"
+                                           min="10"
+                                           max="200"
+                                           step="5"
+                                           class="form-range flex-grow-1">
+                                    <span id="vegas_scroll_speed_value" class="fw-medium small" style="min-width: 2rem;">{{ main_config.display.get('vegas_scroll', {}).get('scroll_speed', 50) }}</span>
+                                </div>
+                                <div class="form-text">Speed of the scrolling ticker (10-200 px/s)</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="vegas_separator_width" class="form-label fw-medium">Separator Width (pixels)</label>
+                                <input type="number"
+                                       id="vegas_separator_width"
+                                       name="vegas_separator_width"
+                                       value="{{ main_config.display.get('vegas_scroll', {}).get('separator_width', 32) }}"
+                                       min="0"
+                                       max="128"
+                                       class="form-control">
+                                <div class="form-text">Gap between plugin content blocks (0-128 px)</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
+                                <label for="vegas_target_fps" class="form-label fw-medium">Target FPS</label>
+                                <select id="vegas_target_fps" name="vegas_target_fps" class="form-select">
+                                    <option value="60" {% if main_config.display.get('vegas_scroll', {}).get('target_fps', 125) == 60 %}selected{% endif %}>60 FPS (Lower CPU)</option>
+                                    <option value="90" {% if main_config.display.get('vegas_scroll', {}).get('target_fps', 125) == 90 %}selected{% endif %}>90 FPS (Balanced)</option>
+                                    <option value="125" {% if main_config.display.get('vegas_scroll', {}).get('target_fps', 125) == 125 %}selected{% endif %}>125 FPS (Smoothest)</option>
+                                </select>
+                                <div class="form-text">Higher FPS = smoother scroll, more CPU usage</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="vegas_buffer_ahead" class="form-label fw-medium">Buffer Ahead</label>
+                                <select id="vegas_buffer_ahead" name="vegas_buffer_ahead" class="form-select">
+                                    <option value="1" {% if main_config.display.get('vegas_scroll', {}).get('buffer_ahead', 2) == 1 %}selected{% endif %}>1 Plugin (Less memory)</option>
+                                    <option value="2" {% if main_config.display.get('vegas_scroll', {}).get('buffer_ahead', 2) == 2 %}selected{% endif %}>2 Plugins (Recommended)</option>
+                                    <option value="3" {% if main_config.display.get('vegas_scroll', {}).get('buffer_ahead', 2) == 3 %}selected{% endif %}>3 Plugins (More buffer)</option>
+                                </select>
+                                <div class="form-text">How many plugins to pre-load ahead</div>
+                            </div>
+                        </div>
+
+                        <!-- Plugin Order Section -->
+                        <hr>
+                        <h6 class="fw-medium mb-2">Plugin Order</h6>
+                        <p class="small text-muted mb-3">Drag to reorder plugins. Uncheck to exclude from Vegas scroll.</p>
+                        <div id="vegas_plugin_order" class="list-group mb-3">
+                            <!-- Plugin order list will be populated by JavaScript -->
+                            <p class="text-muted small fst-italic p-3">Loading plugins...</p>
+                        </div>
+                        <input type="hidden" id="vegas_plugin_order_value" name="vegas_plugin_order" value="{{ main_config.display.get('vegas_scroll', {}).get('plugin_order', [])|tojson }}">
+                        <input type="hidden" id="vegas_excluded_plugins_value" name="vegas_excluded_plugins" value="{{ main_config.display.get('vegas_scroll', {}).get('excluded_plugins', [])|tojson }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>
+                    Save Display Settings
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -471,7 +479,7 @@ if (typeof window.fixInvalidNumberInputs !== 'function') {
                 // Handle both {data: {plugins: []}} and {plugins: []} response formats
                 const allPlugins = data.data?.plugins || data.plugins || [];
                 if (!allPlugins || allPlugins.length === 0) {
-                    container.innerHTML = '<p class="text-sm text-gray-500 italic">No plugins available</p>';
+                    container.innerHTML = '<p class="text-muted small fst-italic p-3">No plugins available</p>';
                     return;
                 }
 
@@ -512,32 +520,32 @@ if (typeof window.fixInvalidNumberInputs !== 'function') {
                     // Determine display mode (from plugin config or default)
                     const vegasMode = plugin.vegas_mode || plugin.vegas_content_type || 'fixed';
                     const modeLabels = {
-                        'scroll': { label: 'Scroll', icon: 'fa-scroll', color: 'text-blue-600' },
-                        'fixed': { label: 'Fixed', icon: 'fa-square', color: 'text-green-600' },
-                        'static': { label: 'Static', icon: 'fa-pause', color: 'text-orange-600' }
+                        'scroll': { label: 'Scroll', icon: 'fa-scroll', color: 'text-primary' },
+                        'fixed': { label: 'Fixed', icon: 'fa-square', color: 'text-success' },
+                        'static': { label: 'Static', icon: 'fa-pause', color: 'text-warning' }
                     };
                     const modeInfo = modeLabels[vegasMode] || modeLabels['fixed'];
                     // Escape plugin metadata to prevent XSS
                     const safePluginId = escapeAttr(plugin.id);
                     const safePluginName = escapeHtml(plugin.name || plugin.id);
                     html += `
-                        <div class="flex items-center p-2 bg-gray-50 rounded border border-gray-200 cursor-move vegas-plugin-item"
-                             data-plugin-id="${safePluginId}" draggable="true">
-                            <i class="fas fa-grip-vertical text-gray-400 mr-3"></i>
-                            <label class="flex items-center flex-1">
+                        <div class="list-group-item d-flex align-items-center vegas-plugin-item"
+                             data-plugin-id="${safePluginId}" draggable="true" style="cursor: move;">
+                            <i class="fas fa-grip-vertical text-muted me-3"></i>
+                            <div class="form-check flex-grow-1">
                                 <input type="checkbox"
-                                       class="vegas-plugin-include h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
+                                       class="form-check-input vegas-plugin-include"
                                        ${!isExcluded ? 'checked' : ''}>
-                                <span class="text-sm font-medium text-gray-700">${safePluginName}</span>
-                            </label>
-                            <span class="text-xs ${modeInfo.color} ml-2" title="Vegas display mode: ${modeInfo.label}">
-                                <i class="fas ${modeInfo.icon} mr-1"></i>${modeInfo.label}
+                                <label class="form-check-label fw-medium small">${safePluginName}</label>
+                            </div>
+                            <span class="badge bg-light ${modeInfo.color} border small" title="Vegas display mode: ${modeInfo.label}">
+                                <i class="fas ${modeInfo.icon} me-1"></i>${modeInfo.label}
                             </span>
                         </div>
                     `;
                 });
 
-                container.innerHTML = html || '<p class="text-sm text-gray-500 italic">No enabled plugins</p>';
+                container.innerHTML = html || '<p class="text-muted small fst-italic p-3">No enabled plugins</p>';
 
                 // Setup drag and drop
                 setupDragAndDrop(container);
@@ -552,7 +560,7 @@ if (typeof window.fixInvalidNumberInputs !== 'function') {
             })
             .catch(error => {
                 console.error('Error fetching plugins:', error);
-                container.innerHTML = '<p class="text-sm text-red-500">Error loading plugins</p>';
+                container.innerHTML = '<p class="text-danger small p-3">Error loading plugins</p>';
             });
     }
 
