@@ -1,0 +1,37 @@
+# Ruff configuration for LEDMatrix
+# Replaces flake8, flake8-bugbear, isort, and mypy
+
+target-version = "py310"
+line-length = 120
+
+# Exclude directories that shouldn't be linted
+exclude = [
+    "plugins/",
+    "plugin-repos/",
+    "venv/",
+    ".venv/",
+    ".git/",
+    "__pycache__/",
+    "rpi-rgb-led-matrix-master/",
+    "starlark-apps/",
+]
+
+[lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "B",    # flake8-bugbear
+    "I",    # isort
+    "UP",   # pyupgrade
+    "W",    # pycodestyle warnings
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[lint.per-file-ignores]
+"test/**/*.py" = ["B", "UP"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
