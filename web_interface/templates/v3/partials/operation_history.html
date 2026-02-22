@@ -1,92 +1,105 @@
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="border-b border-gray-200 pb-4 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900">Operation History</h2>
-        <p class="mt-1 text-sm text-gray-600">View history of plugin operations and configuration changes for debugging and auditing.</p>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="card-title mb-1">Operation History</h2>
+        <p class="card-subtitle text-muted small mb-0">View history of plugin operations and configuration changes for debugging and auditing.</p>
     </div>
 
-    <!-- Controls -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex items-center space-x-4">
-            <!-- Filter by Plugin -->
-            <select id="history-plugin-filter" class="form-control text-sm">
-                <option value="">All Plugins</option>
-            </select>
+    <div class="card-body">
+        <!-- Controls -->
+        <div class="row g-2 align-items-end mb-4">
+            <div class="col-12 col-md-auto">
+                <!-- Filter by Plugin -->
+                <label class="form-label fw-medium small mb-1">Plugin</label>
+                <select id="history-plugin-filter" class="form-select form-select-sm">
+                    <option value="">All Plugins</option>
+                </select>
+            </div>
 
-            <!-- Filter by Operation Type -->
-            <select id="history-type-filter" class="form-control text-sm">
-                <option value="">All Operations</option>
-                <option value="install">Install</option>
-                <option value="update">Update</option>
-                <option value="uninstall">Uninstall</option>
-                <option value="enable">Enable</option>
-                <option value="disable">Disable</option>
-                <option value="configure">Configure</option>
-            </select>
+            <div class="col-12 col-md-auto">
+                <!-- Filter by Operation Type -->
+                <label class="form-label fw-medium small mb-1">Operation</label>
+                <select id="history-type-filter" class="form-select form-select-sm">
+                    <option value="">All Operations</option>
+                    <option value="install">Install</option>
+                    <option value="update">Update</option>
+                    <option value="uninstall">Uninstall</option>
+                    <option value="enable">Enable</option>
+                    <option value="disable">Disable</option>
+                    <option value="configure">Configure</option>
+                </select>
+            </div>
 
-            <!-- Filter by Status -->
-            <select id="history-status-filter" class="form-control text-sm">
-                <option value="">All Statuses</option>
-                <option value="success">Success</option>
-                <option value="failed">Failed</option>
-            </select>
+            <div class="col-12 col-md-auto">
+                <!-- Filter by Status -->
+                <label class="form-label fw-medium small mb-1">Status</label>
+                <select id="history-status-filter" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <option value="success">Success</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
 
-            <!-- Search -->
-            <div class="relative">
-                <input type="text" id="history-search" placeholder="Search operations..." class="form-control text-sm pl-8 pr-4 py-1 w-48">
-                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
+            <div class="col-12 col-md-auto">
+                <!-- Search -->
+                <label class="form-label fw-medium small mb-1">Search</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="history-search" placeholder="Search operations..." class="form-control">
+                </div>
+            </div>
+
+            <div class="col-12 col-md-auto ms-md-auto">
+                <div class="d-flex gap-2">
+                    <!-- Refresh -->
+                    <button id="refresh-history-btn" class="btn btn-primary btn-sm">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                    <!-- Clear History -->
+                    <button id="clear-history-btn" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash me-1"></i>Clear
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="flex items-center space-x-2">
-            <!-- Refresh -->
-            <button id="refresh-history-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-                <i class="fas fa-sync-alt mr-1"></i>Refresh
-            </button>
-
-            <!-- Clear History -->
-            <button id="clear-history-btn" class="btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
-                <i class="fas fa-trash mr-1"></i>Clear
-            </button>
+        <!-- History Table -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Operation</th>
+                        <th>Plugin</th>
+                        <th>Status</th>
+                        <th>User</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <tr>
+                        <td colspan="6" class="text-center py-3 text-muted">
+                            <div class="placeholder-glow">
+                                <span class="placeholder col-4"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
 
-    <!-- History Table -->
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operation</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plugin</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                </tr>
-            </thead>
-            <tbody id="history-table-body" class="bg-white divide-y divide-gray-200">
-                <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                        <div class="animate-pulse">
-                            <div class="h-4 bg-gray-200 rounded w-1/4 mx-auto"></div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    <div class="mt-4 flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-            Showing <span id="history-start">0</span> to <span id="history-end">0</span> of <span id="history-total">0</span> operations
-        </div>
-        <div class="flex space-x-2">
-            <button id="history-prev-btn" class="btn bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm disabled:opacity-50" disabled>
-                <i class="fas fa-chevron-left mr-1"></i>Previous
-            </button>
-            <button id="history-next-btn" class="btn bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm disabled:opacity-50" disabled>
-                Next<i class="fas fa-chevron-right ml-1"></i>
-            </button>
+        <!-- Pagination -->
+        <div class="d-flex align-items-center justify-content-between mt-3">
+            <div class="small text-muted">
+                Showing <span id="history-start">0</span> to <span id="history-end">0</span> of <span id="history-total">0</span> operations
+            </div>
+            <div class="d-flex gap-2">
+                <button id="history-prev-btn" class="btn btn-outline-secondary btn-sm" disabled>
+                    <i class="fas fa-chevron-left me-1"></i>Previous
+                </button>
+                <button id="history-next-btn" class="btn btn-outline-secondary btn-sm" disabled>
+                    Next<i class="fas fa-chevron-right ms-1"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -167,7 +180,7 @@
         if (pageData.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="6" class="text-center py-3 text-muted">
                         No operations found
                     </td>
                 </tr>
@@ -179,11 +192,12 @@
             const timestamp = new Date(record.timestamp || record.created_at || Date.now());
             const timeStr = timestamp.toLocaleString();
             const normalized = normalizeStatus(record.status);
-            const statusClass = getStatusClass(normalized);
+            const statusBadge = getStatusBadge(normalized);
             const operationType = record.operation_type || 'unknown';
+            const operationBadge = getOperationTypeBadge(operationType);
             const pluginId = record.plugin_id || '-';
             const user = record.user || '-';
-            const error = record.error ? `<div class="text-red-600 text-xs mt-1">${escapeHtml(record.error)}</div>` : '';
+            const error = record.error ? `<div class="text-danger small mt-1">${escapeHtml(record.error)}</div>` : '';
 
             // Build a concise details summary
             let detailsSummary = '';
@@ -197,25 +211,17 @@
                     parts.push(`from: ${String(d.previous_commit).substring(0, 7)}`);
                 }
                 if (d.preserve_config !== undefined) parts.push(d.preserve_config ? 'config preserved' : 'config removed');
-                detailsSummary = parts.length > 0 ? `<span class="text-xs text-gray-500">${escapeHtml(parts.join(' | '))}</span>` : '';
+                detailsSummary = parts.length > 0 ? `<span class="small text-muted">${escapeHtml(parts.join(' | '))}</span>` : '';
             }
 
             return `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(timeStr)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <span class="px-2 py-1 text-xs font-medium rounded ${getOperationTypeClass(operationType)}">
-                            ${escapeHtml(operationType)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(pluginId)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <span class="px-2 py-1 text-xs font-medium rounded ${statusClass}">
-                            ${escapeHtml(normalized)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeHtml(user)}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">
+                <tr>
+                    <td class="small">${escapeHtml(timeStr)}</td>
+                    <td>${operationBadge}</td>
+                    <td class="small">${escapeHtml(pluginId)}</td>
+                    <td>${statusBadge}</td>
+                    <td class="small text-muted">${escapeHtml(user)}</td>
+                    <td class="small">
                         ${detailsSummary || '-'}
                         ${error}
                     </td>
@@ -236,28 +242,24 @@
     }
 
     // Helper functions
-    function getStatusClass(status) {
-        if (status === 'success') return 'bg-green-100 text-green-800';
-        if (status === 'failed') return 'bg-red-100 text-red-800';
-        return 'bg-gray-100 text-gray-800';
+    function getStatusBadge(status) {
+        if (status === 'success') return '<span class="badge bg-success">success</span>';
+        if (status === 'failed') return '<span class="badge bg-danger">failed</span>';
+        return `<span class="badge bg-secondary">${escapeHtml(status)}</span>`;
     }
 
-    function getOperationTypeClass(type) {
+    function getOperationTypeBadge(type) {
         const typeLower = (type || '').toLowerCase();
-        if (typeLower === 'install') {
-            return 'bg-blue-100 text-blue-800';
-        } else if (typeLower === 'update') {
-            return 'bg-purple-100 text-purple-800';
-        } else if (typeLower === 'uninstall') {
-            return 'bg-red-100 text-red-800';
-        } else if (typeLower === 'enable') {
-            return 'bg-green-100 text-green-800';
-        } else if (typeLower === 'disable') {
-            return 'bg-yellow-100 text-yellow-800';
-        } else if (typeLower === 'configure') {
-            return 'bg-teal-100 text-teal-800';
-        }
-        return 'bg-gray-100 text-gray-800';
+        const badgeMap = {
+            'install': 'bg-primary',
+            'update': 'bg-info text-dark',
+            'uninstall': 'bg-danger',
+            'enable': 'bg-success',
+            'disable': 'bg-warning text-dark',
+            'configure': 'bg-secondary'
+        };
+        const badgeClass = badgeMap[typeLower] || 'bg-secondary';
+        return `<span class="badge ${badgeClass}">${escapeHtml(type)}</span>`;
     }
 
     function escapeHtml(text) {
