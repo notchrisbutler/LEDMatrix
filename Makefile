@@ -100,10 +100,10 @@ test-cov: ## Run tests with HTML coverage report
 # ── Plugin Development ───────────────────────────────────────────────
 
 .PHONY: plugin-link
-plugin-link: ## Link a plugin for development (NAME=<id> PATH=<path>)
-	@if [ -z "$(NAME)" ]; then echo "Usage: make plugin-link NAME=<plugin-id> PATH=<path>"; exit 1; fi
-	@if [ -z "$(PATH)" ]; then echo "Usage: make plugin-link NAME=<plugin-id> PATH=<path>"; exit 1; fi
-	./scripts/dev/dev_plugin_setup.sh link $(NAME) $(PATH)
+plugin-link: ## Link a plugin for development (NAME=<id> DIR=<path>)
+	@if [ -z "$(NAME)" ]; then echo "Usage: make plugin-link NAME=<plugin-id> DIR=<path>"; exit 1; fi
+	@if [ -z "$(DIR)" ]; then echo "Usage: make plugin-link NAME=<plugin-id> DIR=<path>"; exit 1; fi
+	./scripts/dev/dev_plugin_setup.sh link $(NAME) $(DIR)
 
 .PHONY: plugin-unlink
 plugin-unlink: ## Unlink a development plugin (NAME=<id>)

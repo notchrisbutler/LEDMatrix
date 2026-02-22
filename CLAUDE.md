@@ -17,7 +17,7 @@
 
 All dev commands go through the Makefile:
 
-```
+```bash
 make setup          # Create venv + install all deps + pre-commit hooks
 make run            # Run emulator mode
 make web            # Run web interface
@@ -92,7 +92,7 @@ Examples:
 
 Tests live in `test/` and use pytest. Config in `pytest.ini`.
 
-```
+```bash
 make test              # All tests
 make test-unit         # pytest -m unit
 make test-integration  # pytest -m integration
@@ -137,8 +137,8 @@ make test-cov          # With coverage report (min 30%)
 - Third-party plugins can use their own repo URL with empty `plugin_path`
 
 ### Plugin Dev Workflow
-```
-make plugin-link NAME=my-plugin PATH=../ledmatrix-my-plugin
+```bash
+make plugin-link NAME=my-plugin DIR=../ledmatrix-my-plugin
 make plugin-list
 make run              # Test with emulator
 make plugin-unlink NAME=my-plugin

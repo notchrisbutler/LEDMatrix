@@ -55,7 +55,6 @@ Create a new LEDMatrix plugin with all required boilerplate files.
 """
 
 from src.plugin_system.base_plugin import BasePlugin
-from typing import Dict, Any
 import time
 
 
