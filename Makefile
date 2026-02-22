@@ -53,6 +53,7 @@ web: ## Run the web interface (WEB_PORT=5050)
 .PHONY: run-all
 run-all: ## Run emulator + web interface together
 	@echo "Starting emulator and web interface..."
+	@trap 'kill 0' INT TERM; \
 	EMULATOR=true $(PYTHON) run.py & \
 	WEB_PORT=$(or $(WEB_PORT),5050) $(PYTHON) web_interface/start.py & \
 	wait
