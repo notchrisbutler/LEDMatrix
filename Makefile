@@ -114,6 +114,12 @@ plugin-unlink: ## Unlink a development plugin (NAME=<id>)
 plugin-list: ## List linked development plugins
 	./scripts/dev/dev_plugin_setup.sh list
 
+# ── Build ────────────────────────────────────────────────────────────
+
+.PHONY: bundle-widgets
+bundle-widgets: ## Bundle widget JS files
+	$(PYTHON) scripts/bundle_widgets.py
+
 # ── Maintenance ──────────────────────────────────────────────────────
 
 .PHONY: clean
