@@ -47,14 +47,14 @@ run: ## Run LED matrix in emulator mode
 	EMULATOR=true $(PYTHON) run.py
 
 .PHONY: web
-web: ## Run the web interface
-	$(PYTHON) web_interface/start.py
+web: ## Run the web interface (WEB_PORT=5050)
+	WEB_PORT=$(or $(WEB_PORT),5050) $(PYTHON) web_interface/start.py
 
 .PHONY: run-all
 run-all: ## Run emulator + web interface together
 	@echo "Starting emulator and web interface..."
 	EMULATOR=true $(PYTHON) run.py & \
-	$(PYTHON) web_interface/start.py & \
+	WEB_PORT=$(or $(WEB_PORT),5050) $(PYTHON) web_interface/start.py & \
 	wait
 
 # ── Quality ──────────────────────────────────────────────────────────

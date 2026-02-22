@@ -101,26 +101,28 @@ def main():
     
     # Import and run the Flask app
     from web_interface.app import app
-    
+
+    port = int(os.environ.get('WEB_PORT', '5000'))
+
     print("Starting LED Matrix Web Interface V3...")
-    print("Web server binding to: 0.0.0.0:5000")
-    
+    print(f"Web server binding to: 0.0.0.0:{port}")
+
     # Get and display accessible IP addresses
     ips = get_local_ips()
     if ips:
         print("Access the interface at:")
         for ip in ips:
             if "AP Mode" in ip:
-                print(f"  - http://192.168.4.1:5000 (AP Mode - connect to LEDMatrix-Setup WiFi)")
+                print(f"  - http://192.168.4.1:{port} (AP Mode - connect to LEDMatrix-Setup WiFi)")
             else:
-                print(f"  - http://{ip}:5000")
+                print(f"  - http://{ip}:{port}")
     else:
-        print("  - http://localhost:5000 (local only)")
-        print("  - http://<your-pi-ip>:5000 (replace with your Pi's IP address)")
-    
+        print(f"  - http://localhost:{port} (local only)")
+        print(f"  - http://<your-pi-ip>:{port} (replace with your Pi's IP address)")
+
     # Run the web server with error handling for client disconnections
     try:
-        app.run(host='0.0.0.0', port=5000, debug=False)
+        app.run(host='0.0.0.0', port=port, debug=False)
     except (OSError, BrokenPipeError) as e:
         # Suppress non-critical socket errors (client disconnections)
         if isinstance(e, OSError) and e.errno in (113, 32, 104):  # No route to host, Broken pipe, Connection reset

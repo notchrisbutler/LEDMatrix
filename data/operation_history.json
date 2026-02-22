@@ -1,0 +1,90 @@
+[
+  {
+    "operation_id": "2c988ef3-22a5-46e2-a794-dcf3af6fc5ea",
+    "operation_type": "install",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T00:14:31.066023",
+    "status": "success",
+    "user": null,
+    "details": {
+      "version": "1.0.4",
+      "branch": null
+    },
+    "error": null
+  },
+  {
+    "operation_id": "4f49127e-921f-4c74-aeba-1fafbb49ad23",
+    "operation_type": "enable",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T00:15:26.396855",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "458243d6-eef4-4a7b-a810-f8b555b2a940",
+    "operation_type": "disable",
+    "plugin_id": "starlark-apps",
+    "timestamp": "2026-02-22T00:15:47.817842",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "ce2507b4-c30b-49d1-be19-a41ee6690567",
+    "operation_type": "disable",
+    "plugin_id": "web-ui-info",
+    "timestamp": "2026-02-22T00:15:56.079248",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "dfe7d8ec-acf1-48fd-80c6-b103fc891c1f",
+    "operation_type": "uninstall",
+    "plugin_id": "web-ui-info",
+    "timestamp": "2026-02-22T00:18:44.188134",
+    "status": "success",
+    "user": null,
+    "details": {
+      "preserve_config": false
+    },
+    "error": null
+  },
+  {
+    "operation_id": "3c9de836-3f22-43bc-83d6-e1763f272ffb",
+    "operation_type": "install",
+    "plugin_id": "ledmatrix-flights",
+    "timestamp": "2026-02-22T01:29:26.046923",
+    "status": "success",
+    "user": null,
+    "details": {
+      "version": "1.0.0",
+      "branch": null
+    },
+    "error": null
+  },
+  {
+    "operation_id": "4d7ef5fb-dfe1-423f-8674-c237e39ec58e",
+    "operation_type": "disable",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T01:31:04.465920",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "4d6c52e6-b3c2-414a-90d1-219ef5e16c5d",
+    "operation_type": "enable",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T01:37:02.120923",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  }
+]

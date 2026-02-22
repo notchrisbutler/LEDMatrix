@@ -1,0 +1,19 @@
+[
+  {
+    "operation_id": "ed901c7d-8973-4f46-88f1-1f0081f7b09e",
+    "operation_type": "install",
+    "plugin_id": "ledmatrix-flights",
+    "parameters": {},
+    "status": "completed",
+    "progress": 1.0,
+    "message": "Plugin ledmatrix-flights installed successfully",
+    "error": null,
+    "result": {
+      "success": true,
+      "message": "Plugin ledmatrix-flights installed successfully"
+    },
+    "created_at": "2026-02-22T01:29:21.852657",
+    "started_at": "2026-02-22T01:29:21.852918",
+    "completed_at": "2026-02-22T01:29:26.047080"
+  }
+]

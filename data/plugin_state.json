@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "states": {
+    "clock-simple": {
+      "plugin_id": "clock-simple",
+      "status": "enabled",
+      "enabled": true,
+      "version": null,
+      "installed_at": "2026-02-22T00:14:31.065552",
+      "last_updated": "2026-02-22T01:37:02.120569",
+      "config_version": 5,
+      "metadata": {}
+    },
+    "starlark-apps": {
+      "plugin_id": "starlark-apps",
+      "status": "disabled",
+      "enabled": false,
+      "version": null,
+      "installed_at": null,
+      "last_updated": "2026-02-22T00:15:47.817400",
+      "config_version": 2,
+      "metadata": {}
+    },
+    "ledmatrix-flights": {
+      "plugin_id": "ledmatrix-flights",
+      "status": "installed",
+      "enabled": false,
+      "version": null,
+      "installed_at": "2026-02-22T01:29:26.046250",
+      "last_updated": "2026-02-22T01:29:26.046577",
+      "config_version": 2,
+      "metadata": {}
+    }
+  },
+  "last_updated": "2026-02-22T01:37:02.120640"
+}
