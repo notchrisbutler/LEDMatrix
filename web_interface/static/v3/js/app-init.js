@@ -274,6 +274,8 @@ function app() {
 
             // Ensure content loads for the active tab
             this.$watch('activeTab', (newTab, oldTab) => {
+                // Scroll to top on tab switch
+                window.scrollTo(0, 0);
                 // Update plugin tab states when activeTab changes
                 if (typeof this.updatePluginTabStates === 'function') {
                     this.updatePluginTabStates();
@@ -335,23 +337,79 @@ function app() {
         },
 
         loadTabContent(tab) {
-            // Try to load content for the active tab
-            if (typeof htmx !== 'undefined') {
-                const contentId = tab + '-content';
-                const contentEl = document.getElementById(contentId);
-                if (contentEl && !contentEl.hasAttribute('data-loaded')) {
-                    // Trigger HTMX load
-                    htmx.trigger(contentEl, 'revealed');
-                }
-            } else {
-                // HTMX not available, use direct fetch
-                console.warn('HTMX not available, using direct fetch for tab:', tab);
-                if (tab === 'overview' && typeof loadOverviewDirect === 'function') {
-                    loadOverviewDirect();
-                } else if (tab === 'wifi' && typeof loadWifiDirect === 'function') {
-                    loadWifiDirect();
-                }
-            }
+            const contentEl = document.getElementById(tab + '-content');
+            if (!contentEl || contentEl.hasAttribute('data-loaded')) return;
+
+            const url = this.getPartialUrl(tab);
+            if (!url) return;
+
+            // Mark as loading to prevent duplicate requests
+            contentEl.setAttribute('data-loaded', 'true');
+
+            fetch(url)
+                .then(r => {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.text();
+                })
+                .then(html => {
+                    contentEl.innerHTML = html;
+                    this.executeScripts(contentEl);
+                    if (window.htmx) {
+                        htmx.process(contentEl);
+                    }
+                    if (window.Alpine) {
+                        Alpine.initTree(contentEl);
+                    }
+                    // After plugins tab loads, re-initialize plugin manager
+                    if (tab === 'plugins' && typeof window.initPluginsPage === 'function') {
+                        setTimeout(() => {
+                            if (window.pluginManager) {
+                                window.pluginManager.initialized = false;
+                                window.pluginManager.initializing = false;
+                            }
+                            window.initPluginsPage();
+                        }, 50);
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to load tab:', tab, err);
+                    contentEl.removeAttribute('data-loaded');
+                    contentEl.innerHTML = '<div class="alert alert-danger m-3">' +
+                        '<i class="fas fa-exclamation-triangle me-2"></i>' +
+                        'Failed to load content. <a href="#" onclick="location.reload(); return false;">Refresh page</a>' +
+                        '</div>';
+                });
+        },
+
+        getPartialUrl(tab) {
+            const map = {
+                'overview': '/v3/partials/overview',
+                'general': '/v3/partials/general',
+                'wifi': '/v3/partials/wifi',
+                'schedule': '/v3/partials/schedule',
+                'display': '/v3/partials/display',
+                'config-editor': '/v3/partials/raw-json',
+                'fonts': '/v3/partials/fonts',
+                'logs': '/v3/partials/logs',
+                'cache': '/v3/partials/cache',
+                'operation-history': '/v3/partials/operation-history',
+                'plugins': '/v3/partials/plugins',
+            };
+            if (map[tab]) return map[tab];
+            // Plugin config tabs and starlark tabs
+            if (tab.startsWith('starlark:')) return '/v3/partials/' + tab;
+            return '/v3/partials/plugin-config/' + tab;
+        },
+
+        executeScripts(container) {
+            const scripts = container.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) newScript.src = oldScript.src;
+                if (oldScript.type) newScript.type = oldScript.type;
+                if (oldScript.textContent) newScript.textContent = oldScript.textContent;
+                oldScript.replaceWith(newScript);
+            });
         },
 
         async loadInstalledPlugins() {

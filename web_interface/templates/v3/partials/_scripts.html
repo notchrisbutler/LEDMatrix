@@ -4,16 +4,16 @@
     <!-- SSE connection for real-time updates -->
 
     <!-- Extracted inline JS: SSE connection and stats updates -->
-    <script src="/static/v3/js/sse-manager.js" defer></script>
+    <script src="/static/v3/js/sse-manager.js?v={{ static_version }}" defer></script>
 
     <!-- Extracted inline JS: Full app() implementation (replaces stub from _head.html) -->
-    <script src="/static/v3/js/app-init.js" defer></script>
+    <script src="/static/v3/js/app-init.js?v={{ static_version }}" defer></script>
 
     <!-- Extracted inline JS: Plugin tabs, config helpers, display preview, plugin CRUD -->
-    <script src="/static/v3/js/plugin-tabs.js" defer></script>
+    <script src="/static/v3/js/plugin-tabs.js?v={{ static_version }}" defer></script>
 
     <!-- Extracted inline JS: HTMX event handlers and error handling -->
-    <script src="/static/v3/js/htmx-config.js" defer></script>
+    <script src="/static/v3/js/htmx-config.js?v={{ static_version }}" defer></script>
 
     <!-- Custom v3 JavaScript -->
     <script src="{{ url_for('static', filename='v3/app.js') }}" defer></script>

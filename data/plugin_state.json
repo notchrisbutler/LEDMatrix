@@ -3,12 +3,12 @@
   "states": {
     "clock-simple": {
       "plugin_id": "clock-simple",
-      "status": "enabled",
-      "enabled": true,
+      "status": "disabled",
+      "enabled": false,
       "version": null,
       "installed_at": "2026-02-22T00:14:31.065552",
-      "last_updated": "2026-02-22T01:37:02.120569",
-      "config_version": 5,
+      "last_updated": "2026-02-22T16:21:13.179536",
+      "config_version": 8,
       "metadata": {}
     },
     "starlark-apps": {
@@ -17,20 +17,20 @@
       "enabled": false,
       "version": null,
       "installed_at": null,
-      "last_updated": "2026-02-22T00:15:47.817400",
-      "config_version": 2,
+      "last_updated": "2026-02-22T15:26:46.447592",
+      "config_version": 4,
       "metadata": {}
     },
-    "ledmatrix-flights": {
-      "plugin_id": "ledmatrix-flights",
+    "basketball-scoreboard": {
+      "plugin_id": "basketball-scoreboard",
       "status": "installed",
       "enabled": false,
       "version": null,
-      "installed_at": "2026-02-22T01:29:26.046250",
-      "last_updated": "2026-02-22T01:29:26.046577",
+      "installed_at": "2026-02-22T16:20:29.439830",
+      "last_updated": "2026-02-22T16:20:29.440102",
       "config_version": 2,
       "metadata": {}
     }
   },
-  "last_updated": "2026-02-22T01:37:02.120640"
+  "last_updated": "2026-02-22T16:21:13.179615"
 }

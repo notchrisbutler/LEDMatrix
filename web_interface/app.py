@@ -24,6 +24,14 @@ from src.wifi_manager import WiFiManager
 # Create Flask app
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+# Cache-busting version for static assets (changes on each server restart)
+_static_version = str(int(time.time()))
+
+@app.context_processor
+def inject_static_version():
+    """Inject cache-busting version into all templates."""
+    return {'static_version': _static_version}
 config_manager = ConfigManager()
 
 # CSRF protection disabled for local-only application

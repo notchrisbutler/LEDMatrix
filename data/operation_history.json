@@ -86,5 +86,125 @@
     "user": null,
     "details": null,
     "error": null
+  },
+  {
+    "operation_id": "76dbbd60-398c-4032-b1de-976a3dfea347",
+    "operation_type": "enable",
+    "plugin_id": "starlark-apps",
+    "timestamp": "2026-02-22T15:25:52.378067",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "f1df768a-5a49-4de5-a7a4-0da857cc6e86",
+    "operation_type": "install",
+    "plugin_id": "ledmatrix-flights",
+    "timestamp": "2026-02-22T15:26:10.508720",
+    "status": "success",
+    "user": null,
+    "details": {
+      "version": "1.0.0",
+      "branch": null
+    },
+    "error": null
+  },
+  {
+    "operation_id": "4341d2e8-5dd7-4f1a-9af5-99c20df95726",
+    "operation_type": "disable",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T15:26:44.497901",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "6b6e86cf-45e1-4823-8df7-f13040d8ec0a",
+    "operation_type": "disable",
+    "plugin_id": "starlark-apps",
+    "timestamp": "2026-02-22T15:26:46.447965",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "2d813973-0dad-4850-8fa6-89f3c4b9aa65",
+    "operation_type": "disable",
+    "plugin_id": "ledmatrix-flights",
+    "timestamp": "2026-02-22T16:05:23.127110",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "3e5b45da-0ca6-4599-ba2a-9d24673e57f1",
+    "operation_type": "enable",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T16:05:25.233685",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "8258965a-c5e4-4571-a7e7-babf6be3a537",
+    "operation_type": "uninstall",
+    "plugin_id": "ledmatrix-flights",
+    "timestamp": "2026-02-22T16:15:28.899341",
+    "status": "success",
+    "user": null,
+    "details": {
+      "preserve_config": false
+    },
+    "error": null
+  },
+  {
+    "operation_id": "15807731-74d0-4e00-989a-d37488c2d6b8",
+    "operation_type": "disable",
+    "plugin_id": "ledmatrix-flights",
+    "timestamp": "2026-02-22T16:15:40.435582",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
+  },
+  {
+    "operation_id": "603ff7c4-5a9f-4f2f-bb0e-55290c3a2cfc",
+    "operation_type": "uninstall",
+    "plugin_id": "ledmatrix-flights",
+    "timestamp": "2026-02-22T16:15:45.581721",
+    "status": "success",
+    "user": null,
+    "details": {
+      "preserve_config": false
+    },
+    "error": null
+  },
+  {
+    "operation_id": "de822975-ebd8-4ec3-befe-5b12ff178dce",
+    "operation_type": "install",
+    "plugin_id": "basketball-scoreboard",
+    "timestamp": "2026-02-22T16:20:29.440398",
+    "status": "success",
+    "user": null,
+    "details": {
+      "version": "1.4.0",
+      "branch": null
+    },
+    "error": null
+  },
+  {
+    "operation_id": "75572553-aaeb-49dd-af8c-a941ec827cad",
+    "operation_type": "disable",
+    "plugin_id": "clock-simple",
+    "timestamp": "2026-02-22T16:21:13.179981",
+    "status": "success",
+    "user": null,
+    "details": null,
+    "error": null
   }
 ]

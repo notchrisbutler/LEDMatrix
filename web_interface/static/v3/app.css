@@ -668,6 +668,23 @@ a, button, input, select, textarea {
     background-color: var(--color-border);
 }
 
+/* Dark theme overrides for Bootstrap placeholder skeletons */
+[data-bs-theme="dark"] .placeholder-glow .placeholder {
+    background-color: var(--lm-surface-elevated);
+    opacity: 0.3;
+}
+
+[data-bs-theme="dark"] .placeholder-glow .card {
+    background-color: var(--lm-surface-card);
+    border: 1px solid var(--lm-border);
+}
+
+/* Fix bg-light cards in dark mode (e.g., WiFi status card) */
+[data-bs-theme="dark"] .card.bg-light {
+    background-color: var(--lm-surface-elevated) !important;
+    color: var(--lm-text-primary);
+}
+
 /* --- Theme Toggle --- */
 .theme-toggle-btn {
     display: inline-flex;
