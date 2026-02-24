@@ -58,6 +58,14 @@ run-all: ## Run emulator + web interface together
 	WEB_PORT=$(or $(WEB_PORT),5050) $(PYTHON) web_interface/start.py & \
 	wait
 
+.PHONY: install-web2
+install-web2: ## Install lightweight web UI dependencies
+	$(PIP) install -r web_ui/requirements.txt
+
+.PHONY: web2
+web2: ## Run lightweight web UI (port 5454)
+	$(PYTHON) -m uvicorn web_ui.server:app --host 0.0.0.0 --port 5454 --reload
+
 # ── Quality ──────────────────────────────────────────────────────────
 
 .PHONY: lint

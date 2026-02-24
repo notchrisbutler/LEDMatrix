@@ -31,6 +31,7 @@ ignore = [
 
 [lint.per-file-ignores]
 "test/**/*.py" = ["B", "UP"]
+"web_ui/server.py" = ["E402"]  # sys.path manipulation requires imports after code
 
 [format]
 quote-style = "double"

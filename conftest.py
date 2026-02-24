@@ -6,7 +6,13 @@ Sets up environment and mocks before any test collection occurs.
 
 import os
 import sys
+from pathlib import Path
 from unittest.mock import MagicMock
+
+# Ensure project root is on sys.path for all test imports
+_project_root = str(Path(__file__).parent)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
 
 # Ensure EMULATOR mode is set before any import of display_manager
 os.environ["EMULATOR"] = "true"

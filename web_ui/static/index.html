@@ -1,0 +1,29 @@
+<!-- web_ui/static/index.html -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEDMatrix</title>
+    <link rel="stylesheet" href="/static/css/pico.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <button id="menu-toggle" class="mobile-only" aria-label="Menu">&#9776;</button>
+    <nav class="sidebar" id="sidebar">
+        <header>
+            <h2>LEDMatrix</h2>
+        </header>
+        <ul>
+            <li><a href="#/" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+            <li><a href="#/plugins" class="nav-link" data-page="plugins">Plugins</a></li>
+            <li><a href="#/display" class="nav-link" data-page="display">Display</a></li>
+            <li><a href="#/settings" class="nav-link" data-page="settings">Settings</a></li>
+        </ul>
+    </nav>
+    <main id="content" class="main-content">
+        <p>Loading...</p>
+    </main>
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
